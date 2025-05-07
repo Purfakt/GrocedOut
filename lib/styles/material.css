@@ -1,0 +1,36 @@
+.material-symbols-outlined.text-sm {
+    font-size: var(--text-sm);
+}
+.material-symbols-outlined.text-base {
+    font-size: var(--text-base);
+}
+.material-symbols-outlined.text-lg {
+    font-size: var(--text-lg);
+}
+.material-symbols-outlined.text-xl {
+    font-size: var(--text-xl);
+}
+.material-symbols-outlined.text-2xl {
+    font-size: var(--text-2xl);
+}
+.material-symbols-outlined.text-3xl {
+    font-size: var(--text-3xl);
+}
+.material-symbols-outlined.text-4xl {
+    font-size: var(--text-4xl);
+}
+.material-symbols-outlined.text-5xl {
+    font-size: var(--text-5xl);
+}
+.material-symbols-outlined.text-6xl {
+    font-size: var(--text-6xl);
+}
+.material-symbols-outlined.text-7xl {
+    font-size: var(--text-7xl);
+}
+.material-symbols-outlined.text-8xl {
+    font-size: var(--text-8xl);
+}
+.material-symbols-outlined.text-9xl {
+    font-size: var(--text-9xl);
+}

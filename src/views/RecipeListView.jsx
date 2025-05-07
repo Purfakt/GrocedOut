@@ -49,7 +49,7 @@ export function RecipeListView() {
         <QuickActions>
             <Link to="/recipe/new">
                 <QuickActionButton>
-                    <UiIcon icon="add" size="2xl" bold />
+                    <UiIcon icon="add" size="2xl" />
                 </QuickActionButton>
             </Link>
         </QuickActions>

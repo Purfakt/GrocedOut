@@ -24,7 +24,7 @@ export function RecipeFormView({
 
         <QuickActions>
             <QuickActionButton>
-                <UiIcon icon="check" size="2xl" bold />
+                <UiIcon icon="check" size="2xl" />
             </QuickActionButton>
         </QuickActions>
     </>

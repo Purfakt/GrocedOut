@@ -26,11 +26,11 @@ export function RecipeShowView({
         <QuickActions>
             <Link to={`/recipe/1/edit`}>
                 <QuickActionButton>
-                    <UiIcon icon="edit" size="2xl" bold />
+                    <UiIcon icon="edit" size="2xl" />
                 </QuickActionButton>
             </Link>
             <QuickActionButton variant="error" onClick={() => document.getElementById('modal-recipe-delete').showModal()}>
-                <UiIcon icon="delete" size="2xl" bold />
+                <UiIcon icon="delete" size="2xl" />
             </QuickActionButton>
         </QuickActions>
 
