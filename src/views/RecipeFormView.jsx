@@ -4,8 +4,7 @@ import { QuickActionButton } from '@/components/QuickActionButton.jsx'
 import { Navbar } from '@/components/Navbar.jsx'
 import { useParams } from '@tanstack/react-router'
 
-export function RecipeFormView({
-}) {
+export function RecipeFormView() {
     const { id: recipeId } = useParams({ strict: false })
 
     return <>

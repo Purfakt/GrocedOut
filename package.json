@@ -7,11 +7,15 @@
     "dev": "vite",
     "build": "vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "emulator:export": "firebase emulators:export ./recipe-seed",
+    "emulator:seed": "firebase emulators:start --import=./recipe-seed",
+    "emulator": "firebase emulators:start"
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.1.5",
     "@tanstack/react-router": "^1.120.1",
+    "firebase": "^11.6.1",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "tailwindcss": "^4.1.5"

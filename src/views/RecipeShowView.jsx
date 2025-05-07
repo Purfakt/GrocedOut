@@ -4,9 +4,7 @@ import { QuickActions } from '@/components/QuickActions.jsx'
 import { QuickActionButton } from '@/components/QuickActionButton.jsx'
 import { Navbar } from '@/components/Navbar.jsx'
 
-export function RecipeShowView({
-})
-{
+export function RecipeShowView() {
     return <>
         <Navbar title={"Recipe Title"} backlink="/" />
 
