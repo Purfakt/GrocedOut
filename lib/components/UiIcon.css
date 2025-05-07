@@ -1,0 +1,40 @@
+.UiIcon.text-sm {
+    font-size: var(--text-sm);
+}
+.UiIcon.text-base {
+    font-size: var(--text-base);
+}
+.UiIcon.text-lg {
+    font-size: var(--text-lg);
+}
+.UiIcon.text-xl {
+    font-size: var(--text-xl);
+}
+.UiIcon.text-2xl {
+    font-size: var(--text-2xl);
+}
+.UiIcon.text-3xl {
+    font-size: var(--text-3xl);
+}
+.UiIcon.text-4xl {
+    font-size: var(--text-4xl);
+}
+.UiIcon.text-5xl {
+    font-size: var(--text-5xl);
+}
+.UiIcon.text-6xl {
+    font-size: var(--text-6xl);
+}
+.UiIcon.text-7xl {
+    font-size: var(--text-7xl);
+}
+.UiIcon.text-8xl {
+    font-size: var(--text-8xl);
+}
+.UiIcon.text-9xl {
+    font-size: var(--text-9xl);
+}
+
+.UiIcon.font-bold {
+    font-weight: 700;
+}
