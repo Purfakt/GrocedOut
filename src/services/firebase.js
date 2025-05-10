@@ -1,6 +1,6 @@
 import { initializeApp } from "firebase/app";
 import { getAuth, connectAuthEmulator } from "firebase/auth";
-import { getFirestore, connectFirestoreEmulator } from "firebase/firestore";
+import { getFirestore, connectFirestoreEmulator, collection, getDocs } from "firebase/firestore";
 
 const firebaseConfig = {
     apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
@@ -29,3 +29,6 @@ if (import.meta.env.DEV) {
         emulatorConfig.firestorePort
     );
 }
+
+export const getCollection = async (collectionName) => getDocs(collection(db, collectionName))
+    .then(querySnapshot => querySnapshot.docs)
