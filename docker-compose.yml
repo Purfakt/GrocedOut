@@ -1,0 +1,24 @@
+services:
+  emulator:
+    build:
+      dockerfile: Dockerfile
+      args:
+        - FIREBASE_VERSION=latest
+    stop_grace_period: 1m
+    environment:
+      FIREBASE_AUTH_EMULATOR_HOST: "localhost:9099"
+      FIRESTORE_EMULATOR_HOST: "localhost:8080"
+      FIREBASE_PROJECT: "grocerylist-ecc91"
+      GCLOUD_PROJECT: "grocerylist-ecc91"
+      FORCE_COLOR: 'true'
+      DATA_DIRECTORY: "data"
+      CHOKIDAR_USEPOLLING: 'true'
+    ports:
+      - "4000:4000" # ui
+      - "4400:4401" # hub
+      - "4600:4600" # logging
+      - "8080:8080" # firestore
+      - "9099:9099" # auth
+    volumes:
+      - ./recipe-seed:/srv/firebase/data:rw
+      - ./cache:/root/.cache/:rw
