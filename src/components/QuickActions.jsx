@@ -1,7 +1,9 @@
 export function QuickActions({ children }) {
     return (
-        <div className="fixed bottom-[65px] right-0 p-4 flex flex-row-reverse gap-4">
-            {children}
+        <div className="fixed bottom-[64px] lg:bottom-0 right-0 left-0">
+            <div className="container mx-auto flex flex-row-reverse gap-4 p-4">
+                {children}
+            </div>
         </div>
     )
 }

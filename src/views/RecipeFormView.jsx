@@ -13,10 +13,10 @@ export function RecipeFormView() {
         <div className="container mx-auto p-4">
             <div className="flex flex-col gap-4">
                 <div>
-                    <input type="text" placeholder="Name" className="input w-full mb-2" />
+                    <input type="text" placeholder="Name" className="input input-xl w-full mb-2" />
                 </div>
                 <div>
-                    <textarea placeholder="Description" className="textarea w-full"></textarea>
+                    <textarea placeholder="Description" className="textarea textarea-xl w-full"></textarea>
                 </div>
             </div>
         </div>

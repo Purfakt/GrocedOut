@@ -5,6 +5,7 @@ import { QuickActions } from '@/components/QuickActions.jsx'
 import { QuickActionButton } from '@/components/QuickActionButton.jsx'
 import { useEffect } from 'react'
 import { useRecipeStore } from '@/stores/recipe.store.jsx'
+import { Navbar } from '@/components/Navbar.jsx'
 
 export function RecipeListView() {
     const recipeStore = useRecipeStore()
@@ -12,14 +13,15 @@ export function RecipeListView() {
         recipeStore.listRequest.callOnce()
     })
 
-    if (recipeStore.listRequest.isLoading)
-        return (
+    return <>
+        <Navbar />
+
+        {recipeStore.listRequest.isLoading &&
             <div className="container mx-auto p-4 text-center">
                 <span className="loading loading-spinner loading-xl"></span>
             </div>
-        )
+        }
 
-    return <>
         <div className="container mx-auto p-4">
             <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
                 {recipeStore.listRequest.data.length === 0

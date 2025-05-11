@@ -1,23 +1,80 @@
 import { Link } from '@tanstack/react-router'
 import { UiIcon } from '@lib/components/UiIcon.jsx'
+import { useAuthStore } from '@/stores/auth.store.jsx'
 
 export function Navbar({
     title,
     backlink,
-}) {
+})
+{
+    const authStore = useAuthStore()
+
     return (
-        <div className="navbar bg-base-100 shadow-sm px-4 gap-4">
-            {backlink && (
-                <div className="flex-none">
-                    <Link to={backlink}>
-                        <button className="btn btn-square btn-ghost">
-                            <UiIcon icon="arrow_back_ios_new" size="2xl" />
+        <div className="navbar bg-base-300 items-stretch p-0">
+            <div className="container mx-auto flex items-center gap-4 px-4">
+                {/* Back link */}
+                {backlink &&
+                    <Link to={backlink} className="btn btn-square">
+                        <UiIcon icon="arrow_back_ios_new" size="2xl" />
+                    </Link>
+                }
+                {/* Title */}
+                {title &&
+                    <h1 className="font-bold">
+                        {title}
+                    </h1>
+                }
+                {/* Desktop menu */}
+                <div className={`flex-1 self-stretch ${title ? 'ml-8' : ''}`}>
+                    <div role="tablist" className="hidden lg:flex tabs tabs-border h-full">
+                        <Link to="/" role="tab" className="tab h-full flex gap-2" activeProps={{ className: 'tab-active' }}>
+                            <UiIcon icon="skillet" size="2xl" />
+                            Recipes
+                        </Link>
+                        <Link to="/grocery" role="tab" className="tab h-full flex gap-2" activeProps={{ className: 'tab-active' }}>
+                            <UiIcon icon="shopping_cart" size="2xl" />
+                            Grocery
+                        </Link>
+                    </div>
+                </div>
+                {/* User */}
+                <div className="flex justify-end">
+                    {authStore.user
+                        ? <>
+                            <button className="btn btn-ghost" popoverTarget="navbar-user" style={{ anchorName: '--navbar-user' }}>
+                                <div className="avatar">
+                                    <div className="ring-primary ring-offset-base-100 w-8 rounded-full ring-2 ring-offset-2">
+                                        <img src="https://img.daisyui.com/images/profile/demo/spiderperson@192.webp" />
+                                    </div>
+                                </div>
+                                <p className="hidden sm:inline ml-2">{authStore.user.email}</p>
+                            </button>
+                            <ul className="dropdown dropdown-end menu w-52 rounded-box bg-base-100 shadow-md" popover="auto" id="navbar-user" style={{ positionAnchor: '--navbar-user' }}>
+                                <li>
+                                    <a onClick={authStore.logout}>
+                                        <UiIcon icon="logout" size="2xl" />
+                                        Logout
+                                    </a>
+                                </li>
+                            </ul>
+                        </>
+                        : <button className="btn" onClick={authStore.login}>
+                            <UiIcon icon="person" size="2xl" />
+                            Login
                         </button>
+                    }
+                </div>
+                {/* Mobile dock */}
+                <div className="dock lg:hidden">
+                    <Link to="/" activeProps={{ className: 'dock-active' }}>
+                        <UiIcon icon="skillet" size="2xl" />
+                        <span className="dock-label">Recipes</span>
+                    </Link>
+                    <Link to="/grocery" disabled activeProps={{ className: 'dock-active' }}>
+                        <UiIcon icon="shopping_cart" size="2xl" />
+                        <span className="dock-label">Grocery</span>
                     </Link>
                 </div>
-            )}
-            <div className="flex-1">
-                <h1 className="text-2xl font-bold">{title}</h1>
             </div>
         </div>
     )

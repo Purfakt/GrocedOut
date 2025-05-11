@@ -17,7 +17,6 @@ function createRecipeStore() {
  * Context
  */
 const RecipeStoreContext = createContext(null)
-
 export function useRecipeStore() {
     return useContext(RecipeStoreContext)
 }
