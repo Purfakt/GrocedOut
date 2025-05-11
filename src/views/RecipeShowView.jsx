@@ -6,7 +6,7 @@ import { Navbar } from '@/components/Navbar.jsx'
 
 export function RecipeShowView() {
     return <>
-        <Navbar title={"Recipe Title"} backlink="/" />
+        <Navbar title={'Recipe Title'} backlink="/" />
 
         <div className="container mx-auto p-4">
             <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
@@ -22,7 +22,7 @@ export function RecipeShowView() {
         </div>
 
         <QuickActions>
-            <Link to={`/recipe/1/edit`}>
+            <Link to={'/recipe/1/edit'}>
                 <QuickActionButton>
                     <UiIcon icon="edit" size="2xl" />
                 </QuickActionButton>

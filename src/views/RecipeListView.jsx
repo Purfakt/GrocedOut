@@ -10,7 +10,7 @@ export function RecipeListView() {
     const recipeStore = useRecipeStore()
     useEffect(() => {
         recipeStore.listRequest.callOnce()
-    }, [])
+    })
 
     if (recipeStore.listRequest.isLoading)
         return (

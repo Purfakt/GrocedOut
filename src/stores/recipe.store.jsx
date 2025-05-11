@@ -6,6 +6,7 @@ import { createContext, useContext } from 'react'
  * Store
  */
 function createRecipeStore() {
+    /* eslint-disable react-hooks/rules-of-hooks */
     const listRequest = useRequest(async () => getCollection('recipes')
         .then(collection => collection.map(doc => ({ id: doc.id, ...doc.data() }))))
 

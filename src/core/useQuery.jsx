@@ -17,7 +17,7 @@ export function useRequest(request) {
             const res = await request()
             setData(res)
         } catch (err) {
-            console.error("Error executing request:", err)
+            console.error('Error executing request:', err)
             setError(err)
             setIsError(true)
         } finally {

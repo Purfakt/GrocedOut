@@ -8,7 +8,7 @@ export function RecipeFormView() {
     const { id: recipeId } = useParams({ strict: false })
 
     return <>
-        <Navbar title={recipeId ? "Edit Recipe" : "Create Recipe"} backlink="/" />
+        <Navbar title={recipeId ? 'Edit Recipe' : 'Create Recipe'} backlink="/" />
 
         <div className="container mx-auto p-4">
             <div className="flex flex-col gap-4">

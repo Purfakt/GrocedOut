@@ -1,9 +1,9 @@
 import { UiIcon } from '@lib/components/UiIcon.jsx'
 
 export function RecipeCard({
-    title = "Recipe Title",
-    description = "This is a short description of the recipe. It gives an overview of the ingredients and cooking method.",
-    image = "https://picsum.photos/600/300?t=" + Math.random(),
+    title = 'Recipe Title',
+    description = 'This is a short description of the recipe. It gives an overview of the ingredients and cooking method.',
+    image = 'https://picsum.photos/600/300?t=' + Math.random(),
     onClick = () => { },
 }) {
     return (
