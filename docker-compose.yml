@@ -1,7 +1,7 @@
 services:
   emulator:
     build:
-      dockerfile: Dockerfile
+      dockerfile: .docker/firebase/Dockerfile
       args:
         - FIREBASE_VERSION=latest
     stop_grace_period: 1m
@@ -20,5 +20,5 @@ services:
       - "8080:8080" # firestore
       - "9099:9099" # auth
     volumes:
-      - ./recipe-seed:/srv/firebase/data:rw
-      - ./cache:/root/.cache/:rw
+      - ./.firebase/recipe-seed:/srv/firebase/data:rw
+      - ./.firebase/cache:/root/.cache/:rw

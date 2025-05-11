@@ -8,8 +8,8 @@
     "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "emulator:export": "firebase emulators:export ./recipe-seed",
-    "emulator:seed": "firebase emulators:start --import=./recipe-seed",
+    "emulator:export": "firebase emulators:export ./.firebase/recipe-seed",
+    "emulator:seed": "firebase emulators:start --import=./.firebase/recipe-seed",
     "emulator": "firebase emulators:start"
   },
   "dependencies": {

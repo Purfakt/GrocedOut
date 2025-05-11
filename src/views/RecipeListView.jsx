@@ -13,9 +13,11 @@ export function RecipeListView() {
     }, [])
 
     if (recipeStore.listRequest.isLoading)
-        return <div className="container mx-auto p-4 text-center">Loading recipes...</div>
-    if (recipeStore.listRequest.isError)
-        return <div className="container mx-auto p-4 text-center text-error">{recipeStore.listRequest.error}</div>
+        return (
+            <div className="container mx-auto p-4 text-center">
+                <span className="loading loading-spinner loading-xl"></span>
+            </div>
+        )
 
     return <>
         <div className="container mx-auto p-4">
