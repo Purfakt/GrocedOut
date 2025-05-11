@@ -14,18 +14,18 @@ export function Navbar({
             <div className="container mx-auto flex items-center gap-4 px-4">
                 {/* Back link */}
                 {backlink &&
-                    <Link to={backlink} className="btn btn-square">
+                    <Link to={backlink} className="lg:hidden btn btn-square">
                         <UiIcon icon="arrow_back_ios_new" size="2xl" />
                     </Link>
                 }
                 {/* Title */}
                 {title &&
-                    <h1 className="font-bold">
+                    <h1 className="lg:hidden text-2xl font-bold">
                         {title}
                     </h1>
                 }
                 {/* Desktop menu */}
-                <div className={`flex-1 self-stretch ${title ? 'ml-8' : ''}`}>
+                <div className="flex-1 self-stretch">
                     <div role="tablist" className="hidden lg:flex tabs tabs-border h-full">
                         <Link to="/" role="tab" className="tab h-full flex gap-2" activeProps={{ className: 'tab-active' }}>
                             <UiIcon icon="skillet" size="2xl" />
@@ -65,14 +65,14 @@ export function Navbar({
                     }
                 </div>
                 {/* Mobile dock */}
-                <div className="dock lg:hidden">
+                <div className="dock dock-lg lg:hidden">
                     <Link to="/" activeProps={{ className: 'dock-active' }}>
                         <UiIcon icon="skillet" size="2xl" />
-                        <span className="dock-label">Recipes</span>
+                        <span className="dock-label text-base!">Recipes</span>
                     </Link>
-                    <Link to="/grocery" disabled activeProps={{ className: 'dock-active' }}>
+                    <Link to="/grocery" activeProps={{ className: 'dock-active' }}>
                         <UiIcon icon="shopping_cart" size="2xl" />
-                        <span className="dock-label">Grocery</span>
+                        <span className="dock-label text-base!">Grocery</span>
                     </Link>
                 </div>
             </div>

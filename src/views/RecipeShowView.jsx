@@ -9,11 +9,12 @@ export function RecipeShowView() {
         <Navbar title={'Recipe Title'} backlink="/" />
 
         <div className="container mx-auto p-4">
-            <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
-                <div>
+            <h1 className="hidden lg:block font-bold text-3xl mb-4">Recipe Title</h1>
+            <div className="grid grid-cols-1 gap-4 grid-cols-4">
+                <div className="col-span-4 lg:col-span-2">
                     <img src="https://picsum.photos/500/200" alt="Recipe" className="w-full h-auto rounded-xl shadow-lg" />
                 </div>
-                <div className="col-span-2">
+                <div className="col-span-4 lg:col-span-2">
                     <p>
                         This is a delicious salmon pasta recipe that is quick and easy to make. It features fresh salmon, pasta, and a creamy sauce.
                     </p>
