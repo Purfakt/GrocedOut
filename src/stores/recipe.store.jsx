@@ -1,4 +1,4 @@
-import { useRequest } from '@/core/useQuery.jsx'
+import { useRequest } from '@/core/useRequest.jsx'
 import { getCollection, createDocument, updateDocument, deleteDocument } from '@/services/firebase.js'
 import { createContext, useContext } from 'react'
 
