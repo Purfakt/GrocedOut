@@ -1,4 +1,4 @@
-import { Link } from '@tanstack/react-router'
+import { Link, useRouterState } from '@tanstack/react-router'
 import { UiIcon } from '@lib/components/UiIcon.jsx'
 import { useAuthStore } from '@/stores/auth.store.jsx'
 
@@ -8,6 +8,9 @@ export function Navbar({
 })
 {
     const authStore = useAuthStore()
+    const routerState = useRouterState()
+    const routeRecipeActive = routerState.location.pathname.startsWith('/recipe') || routerState.location.pathname === '/'
+    const routeGroceryActive = routerState.location.pathname.startsWith('/grocery')
 
     return (
         <div className="navbar bg-base-300 items-stretch p-0">
@@ -27,11 +30,11 @@ export function Navbar({
                 {/* Desktop menu */}
                 <div className="flex-1 self-stretch">
                     <div role="tablist" className="hidden lg:flex tabs tabs-border h-full">
-                        <Link to="/" role="tab" className="tab h-full flex gap-2" activeProps={{ className: 'tab-active' }}>
+                        <Link to="/" role="tab" className={`tab h-full flex gap-2 ${routeRecipeActive ? 'tab-active' : ''}`}>
                             <UiIcon icon="skillet" size="2xl" />
                             Recipes
                         </Link>
-                        <Link to="/grocery" role="tab" className="tab h-full flex gap-2" activeProps={{ className: 'tab-active' }}>
+                        <Link to="/grocery" role="tab" className={`tab h-full flex gap-2 ${routeGroceryActive ? 'tab-active' : ''}`}>
                             <UiIcon icon="shopping_cart" size="2xl" />
                             Grocery
                         </Link>
@@ -66,11 +69,11 @@ export function Navbar({
                 </div>
                 {/* Mobile dock */}
                 <div className="dock dock-lg lg:hidden">
-                    <Link to="/" activeProps={{ className: 'dock-active' }}>
+                    <Link to="/" className={`${routeRecipeActive ? 'dock-active' : ''}`}>
                         <UiIcon icon="skillet" size="2xl" />
                         <span className="dock-label text-base!">Recipes</span>
                     </Link>
-                    <Link to="/grocery" activeProps={{ className: 'dock-active' }}>
+                    <Link to="/grocery" className={`${routeGroceryActive ? 'dock-active' : ''}`}>
                         <UiIcon icon="shopping_cart" size="2xl" />
                         <span className="dock-label text-base!">Grocery</span>
                     </Link>
