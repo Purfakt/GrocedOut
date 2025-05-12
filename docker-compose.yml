@@ -11,7 +11,7 @@ services:
       FIREBASE_PROJECT: "grocerylist-ecc91"
       GCLOUD_PROJECT: "grocerylist-ecc91"
       FORCE_COLOR: 'true'
-      DATA_DIRECTORY: "data"
+      DATA_DIRECTORY: "data/export"
       CHOKIDAR_USEPOLLING: 'true'
     ports:
       - "4000:4000" # ui
@@ -20,5 +20,5 @@ services:
       - "8080:8080" # firestore
       - "9099:9099" # auth
     volumes:
-      - ./.firebase/recipe-seed:/srv/firebase/data:rw
+      - ./.firebase/data:/srv/firebase/data:rw
       - ./.firebase/cache:/root/.cache/:rw

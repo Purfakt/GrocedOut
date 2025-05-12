@@ -9,8 +9,8 @@
     "lint": "eslint .",
     "format": "eslint . --fix",
     "preview": "vite preview",
-    "emulator:export": "firebase emulators:export ./.firebase/recipe-seed",
-    "emulator:seed": "firebase emulators:start --import=./.firebase/recipe-seed",
+    "emulator:export": "firebase emulators:export ./.firebase/data/export",
+    "emulator:seed": "firebase emulators:start --import=./.firebase/data/export",
     "emulator": "firebase emulators:start"
   },
   "dependencies": {
