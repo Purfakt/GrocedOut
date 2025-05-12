@@ -56,3 +56,9 @@ If you want to export the data living in the emulator at a given point in use, r
 ```sh
 npm run emulator:export
 ```
+
+If you want to export the data inside the docker container:
+
+```sh
+docker exec -w /srv/firebase grocedout-emulator-1 firebase emulators:export --force ./data/export 
+```
