@@ -9,6 +9,7 @@ export function createAuthStore() {
     /* eslint-disable react-hooks/rules-of-hooks */
     const [user, setUser] = useState(null)
     const [token, setToken] = useState(null)
+    const [isAdmin, setIsAdmin] = useState(false)
 
     function login() {
         signInWithPopup(auth, new GoogleAuthProvider())
@@ -16,7 +17,7 @@ export function createAuthStore() {
                 const credential = GoogleAuthProvider.credentialFromResult(result)
                 setToken(credential.accessToken)
                 setUser(result.user)
-                console.log('User logged in:', result.user)
+                setIsAdmin(JSON.parse(result.user?.reloadUserInfo?.customAttributes)?.isAdmin || false)
             })
     }
 
@@ -28,7 +29,7 @@ export function createAuthStore() {
             })
     }
 
-    return { user, token, login, logout }
+    return { user, token, isAdmin, login, logout }
 }
 
 /*

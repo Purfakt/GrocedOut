@@ -11,22 +11,26 @@ export function Navbar({
     const routerState = useRouterState()
     const routeRecipeActive = routerState.location.pathname.startsWith('/recipe') || routerState.location.pathname === '/'
     const routeGroceryActive = routerState.location.pathname.startsWith('/grocery')
+    const routeIngredientsActive = routerState.location.pathname.startsWith('/ingredients')
 
     return (
         <div className="navbar bg-base-300 items-stretch p-0">
             <div className="container mx-auto flex items-center gap-4 px-4">
-                {/* Back link */}
+
+                {/* Mobile back button */}
                 {backlink &&
                     <Link to={backlink} className="lg:hidden btn btn-square">
                         <UiIcon icon="arrow_back_ios_new" size="2xl" />
                     </Link>
                 }
+
                 {/* Title */}
                 {title &&
                     <h1 className="lg:hidden text-2xl font-bold">
                         {title}
                     </h1>
                 }
+
                 {/* Desktop menu */}
                 <div className="flex-1 self-stretch">
                     <div role="tablist" className="hidden lg:flex tabs tabs-border h-full">
@@ -38,15 +42,23 @@ export function Navbar({
                             <UiIcon icon="shopping_cart" size="2xl" />
                             Grocery
                         </Link>
+                        {authStore.isAdmin &&
+                            <Link to="/ingredients" role="tab" className={`tab h-full flex gap-2 ${routeIngredientsActive ? 'tab-active' : ''}`}>
+                                <UiIcon icon="grocery" size="2xl" />
+                                Ingredients
+                            </Link>
+                        }
                     </div>
                 </div>
+
                 {/* User */}
                 <div className="flex justify-end">
                     {authStore.user
-                        ? <>
+                        ?
+                        <>
                             <button className="btn btn-ghost" popoverTarget="navbar-user" style={{ anchorName: '--navbar-user' }}>
                                 <div className="avatar">
-                                    <div className="ring-primary ring-offset-base-100 w-8 rounded-full ring-2 ring-offset-2">
+                                    <div className={`ring-offset-base-100 w-6 rounded-full ring-2 ring-offset-2 ${authStore.isAdmin ? 'ring-primary' : 'ring-secondary'}`}>
                                         <img src="https://img.daisyui.com/images/profile/demo/spiderperson@192.webp" />
                                     </div>
                                 </div>
@@ -61,12 +73,14 @@ export function Navbar({
                                 </li>
                             </ul>
                         </>
-                        : <button className="btn" onClick={authStore.login}>
+                        :
+                        <button className="btn" onClick={authStore.login}>
                             <UiIcon icon="person" size="2xl" />
                             Login
                         </button>
                     }
                 </div>
+
                 {/* Mobile dock */}
                 <div className="dock dock-lg lg:hidden">
                     <Link to="/" className={`${routeRecipeActive ? 'dock-active' : ''}`}>
@@ -77,7 +91,14 @@ export function Navbar({
                         <UiIcon icon="shopping_cart" size="2xl" />
                         <span className="dock-label text-base!">Grocery</span>
                     </Link>
+                    {authStore.isAdmin &&
+                        <Link to="/ingredients" className={`${routeIngredientsActive ? 'dock-active' : ''}`}>
+                            <UiIcon icon="grocery" size="2xl" />
+                            <span className="dock-label text-base!">Ingredients</span>
+                        </Link>
+                    }
                 </div>
+
             </div>
         </div>
     )
