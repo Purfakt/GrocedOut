@@ -4,6 +4,7 @@ import { QuickActions } from '@/components/QuickActions.jsx'
 import { QuickActionButton } from '@/components/QuickActionButton.jsx'
 import { Navbar } from '@/components/Navbar.jsx'
 import { useRecipeStore } from '@/stores/recipe.store.jsx'
+import { useState } from 'react'
 
 export function RecipeShowView() {
     const navigate = useNavigate()
@@ -12,9 +13,13 @@ export function RecipeShowView() {
     const { id: recipeId } = useParams({ strict: false })
     const recipe = recipeStore.getById(recipeId)
 
-    const onDelete = () => {
-        recipeStore.deleteMutation.call(recipeId)
-        recipeStore.listQuery.call()
+    const [isDeleteLoading, setIsDeleteLoading] = useState(false)
+    const onDelete = async () => {
+        if (isDeleteLoading) return
+        setIsDeleteLoading(true)
+        await recipeStore.deleteMutation.call(recipeId)
+        await recipeStore.listQuery.call()
+        setIsDeleteLoading(false)
         return navigate({ to: '/' })
     }
 
@@ -60,7 +65,11 @@ export function RecipeShowView() {
                                 <form method="dialog">
                                     <button className="btn">No, cancel</button>
                                 </form>
-                                <button className="btn btn-error" onClick={onDelete}>Yes, delete!</button>
+                                <button className="btn btn-error" onClick={onDelete}>
+                                    {isDeleteLoading
+                                        ? <span className="loading loading-spinner loading-sm"></span>
+                                        : 'Yes, delete!'}
+                                </button>
                             </div>
                         </div>
                         <form method="dialog" className="modal-backdrop">
