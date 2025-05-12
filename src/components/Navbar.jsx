@@ -11,7 +11,7 @@ export function Navbar({
     const routerState = useRouterState()
     const routeRecipeActive = routerState.location.pathname.startsWith('/recipe') || routerState.location.pathname === '/'
     const routeGroceryActive = routerState.location.pathname.startsWith('/grocery')
-    const routeIngredientsActive = routerState.location.pathname.startsWith('/ingredients')
+    const routeIngredientsActive = routerState.location.pathname.startsWith('/ingredient')
 
     return (
         <div className="navbar bg-base-300 items-stretch p-0">
@@ -43,7 +43,7 @@ export function Navbar({
                             Grocery
                         </Link>
                         {authStore.isAdmin &&
-                            <Link to="/ingredients" role="tab" className={`tab h-full flex gap-2 ${routeIngredientsActive ? 'tab-active' : ''}`}>
+                            <Link to="/ingredient" role="tab" className={`tab h-full flex gap-2 ${routeIngredientsActive ? 'tab-active' : ''}`}>
                                 <UiIcon icon="grocery" size="2xl" />
                                 Ingredients
                             </Link>
@@ -92,7 +92,7 @@ export function Navbar({
                         <span className="dock-label text-base!">Grocery</span>
                     </Link>
                     {authStore.isAdmin &&
-                        <Link to="/ingredients" className={`${routeIngredientsActive ? 'dock-active' : ''}`}>
+                        <Link to="/ingredient" className={`${routeIngredientsActive ? 'dock-active' : ''}`}>
                             <UiIcon icon="grocery" size="2xl" />
                             <span className="dock-label text-base!">Ingredients</span>
                         </Link>
