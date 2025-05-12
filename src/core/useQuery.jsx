@@ -26,6 +26,7 @@ export function useQuery(query) {
                 await new Promise(resolve => setTimeout(resolve, delay.current))
             }
             const res = await query(...callParams)
+            console.log('Data loaded:', res)
             setData(res)
         } catch (err) {
             console.error('Error executing query:', err)

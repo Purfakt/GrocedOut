@@ -53,6 +53,7 @@ export const getDocument = async (collectionName, documentId) => {
 export const createDocument = async (collectionName, data) => {
     console.log('Creating document in collection:', collectionName, 'with data:', data)
     const docRef = await addDoc(collection(db, collectionName), data)
+    console.log('Document created with ID:', docRef.id)
     return docRef.id
 }
 
