@@ -11,14 +11,17 @@ export function RecipeListView() {
 
     const onSetQuantity = (recipe, quantity) => {
         if (quantity < 0 || recipe.quantity === quantity) return
-        recipeStore.update(recipe.id, { quantity })
-            .then(() => recipeStore.listRequest.call())
+        recipeStore.updateMutation.call(recipe.id, { quantity })
+            .then(() => {
+                recipeStore.listQuery.disableNextLoading()
+                return recipeStore.listQuery.call()
+            })
     }
 
     return <>
         <Navbar />
 
-        {recipeStore.listRequest.isLoading &&
+        {recipeStore.listQuery.isLoading &&
             <div className="container mx-auto p-4 text-center">
                 <span className="loading loading-spinner loading-xl"></span>
             </div>
@@ -26,9 +29,9 @@ export function RecipeListView() {
 
         <div className="container mx-auto p-4">
             <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-                {recipeStore.listRequest.data.length === 0
+                {recipeStore.listQuery.data.length === 0
                     ? <p>No recipes found. Add your first recipe!</p>
-                    : recipeStore.listRequest.data.map(recipe => (
+                    : recipeStore.listQuery.data.map(recipe => (
                         <div key={recipe.id}>
                             <Link to={`/recipe/${recipe.id}`}>
                                 <RecipeCard

@@ -13,8 +13,8 @@ export function RecipeShowView() {
     const recipe = recipeStore.getById(recipeId)
 
     const onDelete = () => {
-        recipeStore.remove(recipeId)
-        recipeStore.listRequest.call()
+        recipeStore.deleteMutation.call(recipeId)
+        recipeStore.listQuery.call()
         return navigate({ to: '/' })
     }
 

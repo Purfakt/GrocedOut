@@ -1,5 +1,5 @@
 import { UiIcon } from '@lib/components/UiIcon.jsx'
-import { useState } from 'react'
+import { useDependentState } from '@/core/useDependentState.jsx'
 
 export function RecipeCard({
     title = 'Recipe Title',
@@ -9,7 +9,7 @@ export function RecipeCard({
     onClick = () => { },
     onSetQuantity = (quantity) => { },
 }) {
-    const [localQuantity, setLocalQuantity] = useState(parseInt(quantity.toString()) || 0)
+    const [localQuantity, setLocalQuantity] = useDependentState(parseInt(quantity.toString()) || 0, [quantity])
 
     return (
         <div className="card bg-base-100 card-border border-base-300 card-sm" onClick={onClick}>
@@ -33,7 +33,7 @@ export function RecipeCard({
                             <input
                                 type="number"
                                 className="input w-full text-center font-bold"
-                                value={localQuantity}
+                                value={localQuantity.toString()}
                                 onChange={(e) => setLocalQuantity(parseInt(e.target.value) || 0)}
                                 onBlur={(e) => {
                                     const newQuantity = parseInt(e.target.value) || 0

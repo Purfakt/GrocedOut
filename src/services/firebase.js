@@ -30,11 +30,16 @@ if (import.meta.env.DEV) {
     )
 }
 
-export const getCollection = async (collectionName) => getDocs(collection(db, collectionName))
-    .then(querySnapshot => querySnapshot.docs)
-    .then(collection => collection.map(doc => ({ id: doc.id, ...doc.data() })))
+export const getCollection = async (collectionName) => {
+    console.log('Getting collection:', collectionName)
+    const querySnapshot = await getDocs(collection(db, collectionName))
+    const collectionData = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }))
+    console.log('Collection data:', collectionData)
+    return collectionData
+}
 
 export const getDocument = async (collectionName, documentId) => {
+    console.log('Getting document from collection:', collectionName, 'with id:', documentId)
     const docRef = doc(db, collectionName, documentId)
     const docSnap = await getDoc(docRef)
     if (docSnap.exists()) {
@@ -46,17 +51,19 @@ export const getDocument = async (collectionName, documentId) => {
 }
 
 export const createDocument = async (collectionName, data) => {
+    console.log('Creating document in collection:', collectionName, 'with data:', data)
     const docRef = await addDoc(collection(db, collectionName), data)
-    console.log(docRef.id)
     return docRef.id
 }
 
 export const updateDocument = async (collectionName, documentId, data) => {
+    console.log('Updating document in collection:', collectionName, 'with id:', documentId, 'and data:', data)
     const docRef = doc(db, collectionName, documentId)
     return updateDoc(docRef, data)
 }
 
 export const deleteDocument = async (collectionName, documentId) => {
+    console.log('Deleting document in collection:', collectionName, 'with id:', documentId)
     const docRef = doc(db, collectionName, documentId)
     return deleteDoc(docRef)
 }

@@ -1,7 +1,7 @@
 import { Navbar } from '@/components/Navbar.jsx'
 import { useNavigate, useParams } from '@tanstack/react-router'
-import { useEffect, useState } from 'react'
 import { useRecipeStore } from '@/stores/recipe.store.jsx'
+import { useDependentState } from '@/core/useDependentState.jsx'
 
 export function RecipeFormView() {
     const navigate = useNavigate()
@@ -11,20 +11,16 @@ export function RecipeFormView() {
     const isEditMode = !!recipeId
     const editedRecipe = isEditMode ? recipeStore.getById(recipeId) : null
 
-    const [localName, setLocalName] = useState(editedRecipe?.name || '')
-    const [localDescription, setLocalDescription] = useState(editedRecipe?.description || '')
-    useEffect(() => {
-        setLocalName(editedRecipe?.name || '')
-        setLocalDescription(editedRecipe?.description || '')
-    }, [editedRecipe])
+    const [localName, setLocalName] = useDependentState(editedRecipe?.name || '', [editedRecipe?.name])
+    const [localDescription, setLocalDescription] = useDependentState(editedRecipe?.description || '', [editedRecipe?.description])
 
     const onBlur = () => {
         if (isEditMode) {
-            recipeStore.update(recipeId, { name: localName, description: localDescription })
-                .then(() => recipeStore.listRequest.call())
+            recipeStore.updateMutation.call(recipeId, { name: localName, description: localDescription })
+                .then(() => recipeStore.listQuery.call())
         } else {
-            recipeStore.create({ name: localName, description: localDescription })
-                .then(() => recipeStore.listRequest.call())
+            recipeStore.createMutation.call({ name: localName, description: localDescription })
+                .then(() => recipeStore.listQuery.call())
                 .then((id) => navigate({ to: `/recipe/${id}/edit` }))
         }
     }
@@ -49,13 +45,13 @@ export function RecipeFormView() {
                         />
                     </div>
                     <div>
-                    <textarea
-                        placeholder="Description"
-                        className="textarea textarea-lg w-full"
-                        value={localDescription}
-                        onChange={(e) => setLocalDescription(e.target.value)}
-                        onBlur={onBlur}
-                    ></textarea>
+                        <textarea
+                            placeholder="Description"
+                            className="textarea textarea-lg w-full"
+                            value={localDescription}
+                            onChange={(e) => setLocalDescription(e.target.value)}
+                            onBlur={onBlur}
+                        ></textarea>
                     </div>
                 </div>
             </div>
