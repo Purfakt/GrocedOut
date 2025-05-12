@@ -1,6 +1,6 @@
 import { initializeApp } from 'firebase/app'
 import { getAuth, connectAuthEmulator } from 'firebase/auth'
-import { getFirestore, connectFirestoreEmulator, collection, getDocs } from 'firebase/firestore'
+import { getFirestore, connectFirestoreEmulator, collection, doc, getDocs, getDoc, addDoc, updateDoc, deleteDoc } from 'firebase/firestore'
 
 const firebaseConfig = {
     apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
@@ -32,3 +32,31 @@ if (import.meta.env.DEV) {
 
 export const getCollection = async (collectionName) => getDocs(collection(db, collectionName))
     .then(querySnapshot => querySnapshot.docs)
+    .then(collection => collection.map(doc => ({ id: doc.id, ...doc.data() })))
+
+export const getDocument = async (collectionName, documentId) => {
+    const docRef = doc(db, collectionName, documentId)
+    const docSnap = await getDoc(docRef)
+    if (docSnap.exists()) {
+        console.log('Document data:', docSnap.data())
+        return { id: docSnap.id, ...docSnap.data() }
+    } else {
+        return null
+    }
+}
+
+export const createDocument = async (collectionName, data) => {
+    const docRef = await addDoc(collection(db, collectionName), data)
+    console.log(docRef.id)
+    return docRef.id
+}
+
+export const updateDocument = async (collectionName, documentId, data) => {
+    const docRef = doc(db, collectionName, documentId)
+    return updateDoc(docRef, data)
+}
+
+export const deleteDocument = async (collectionName, documentId) => {
+    const docRef = doc(db, collectionName, documentId)
+    return deleteDoc(docRef)
+}

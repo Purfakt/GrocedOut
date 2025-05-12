@@ -3,15 +3,17 @@ import { Link } from '@tanstack/react-router'
 import { UiIcon } from '@lib/components/UiIcon.jsx'
 import { QuickActions } from '@/components/QuickActions.jsx'
 import { QuickActionButton } from '@/components/QuickActionButton.jsx'
-import { useEffect } from 'react'
 import { useRecipeStore } from '@/stores/recipe.store.jsx'
 import { Navbar } from '@/components/Navbar.jsx'
 
 export function RecipeListView() {
     const recipeStore = useRecipeStore()
-    useEffect(() => {
-        recipeStore.listRequest.callOnce()
-    })
+
+    const onSetQuantity = (recipe, quantity) => {
+        if (quantity < 0 || recipe.quantity === quantity) return
+        recipeStore.update(recipe.id, { quantity })
+            .then(() => recipeStore.listRequest.call())
+    }
 
     return <>
         <Navbar />
@@ -32,6 +34,8 @@ export function RecipeListView() {
                                 <RecipeCard
                                     title={recipe.name}
                                     description={recipe.description}
+                                    quantity={recipe.quantity}
+                                    onSetQuantity={(quantity) => onSetQuantity(recipe, quantity)}
                                 />
                             </Link>
                         </div>

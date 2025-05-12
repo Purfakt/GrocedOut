@@ -1,5 +1,5 @@
 import { useRequest } from '@/core/useQuery.jsx'
-import { getCollection } from '@/services/firebase.js'
+import { getCollection, createDocument, updateDocument, deleteDocument } from '@/services/firebase.js'
 import { createContext, useContext } from 'react'
 
 /*
@@ -7,10 +7,14 @@ import { createContext, useContext } from 'react'
  */
 function createRecipeStore() {
     /* eslint-disable react-hooks/rules-of-hooks */
-    const listRequest = useRequest(async () => getCollection('recipes')
-        .then(collection => collection.map(doc => ({ id: doc.id, ...doc.data() }))))
+    const listRequest = useRequest(async () => getCollection('recipes'))
 
-    return { listRequest }
+    const getById = (id) => listRequest.data.find(recipe => recipe.id === id)
+    const create = (data) => createDocument('recipes', data)
+    const update = (id, data) => updateDocument('recipes', id, data)
+    const remove = (id) => deleteDocument('recipes', id)
+
+    return { listRequest, getById, create, update, remove }
 }
 
 /*
@@ -26,6 +30,7 @@ export function useRecipeStore() {
  */
 export function RecipeStoreProvider({ children }) {
     const store = createRecipeStore()
+    store.listRequest.callOnce()
 
     return (
         <RecipeStoreContext.Provider value={store}>
