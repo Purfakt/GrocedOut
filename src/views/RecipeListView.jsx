@@ -25,7 +25,7 @@ export function RecipeListView() {
         }
 
         <div className="container mx-auto p-4">
-            <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                 {recipeStore.listRequest.data.length === 0
                     ? <p>No recipes found. Add your first recipe!</p>
                     : recipeStore.listRequest.data.map(recipe => (
