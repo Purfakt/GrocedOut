@@ -22,12 +22,14 @@ export function IngredientCategoryListView() {
                                 <thead>
                                 <tr>
                                     <th>Name</th>
+                                    <th></th>
                                 </tr>
                                 </thead>
                                 <tbody>
                                 {ingredientCategoryStore.listQuery.data?.map(ingredientCategory => (
                                     <tr key={ingredientCategory.id}>
                                         <td>{ingredientCategory.name}</td>
+                                        <td></td>
                                     </tr>
                                 ))}
                                 </tbody>
