@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 
-export function useDependentState(value, deps = []) {
+export function useStateWithDeps(value, deps = []) {
     const [state, setState] = useState(value)
     const prevDeps = useRef(deps)
 

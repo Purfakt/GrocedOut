@@ -1,41 +1,63 @@
 import { Navbar } from '@/components/Navbar.jsx'
 import { useNavigate, useParams } from '@tanstack/react-router'
 import { useRecipeStore } from '@/stores/recipe.store.jsx'
-import { useDependentState } from '@/core/useDependentState.jsx'
+import { useStateWithDeps } from '@/utils/useStateWithDeps.jsx'
+import { useState } from 'react'
 
 export function RecipeFormView() {
     const navigate = useNavigate()
     const recipeStore = useRecipeStore()
 
     const { id: recipeId } = useParams({ strict: false })
-    const isEditMode = !!recipeId
-    const editedRecipe = isEditMode ? recipeStore.getById(recipeId) : null
+    /*
+     * isUpdate and updatedRecipe could be simple derived values, but using useState avoids the form from blinking when navigating to the update page.
+     */
+    const [isUpdate, setIsUpdate] = useState(!!recipeId)
+    const [updatedRecipe, setUpdatedRecipe] = useStateWithDeps(isUpdate ? recipeStore.getById(recipeId) : null, [recipeStore.listQuery.data])
 
-    const [localName, setLocalName] = useDependentState(editedRecipe?.name || '', [editedRecipe?.name])
-    const [localDescription, setLocalDescription] = useDependentState(editedRecipe?.description || '', [editedRecipe?.description])
+    const [localName, setLocalName] = useStateWithDeps(updatedRecipe?.name || '', [updatedRecipe?.name])
+    const [localDescription, setLocalDescription] = useStateWithDeps(updatedRecipe?.description || '', [updatedRecipe?.description])
 
     const onBlur = () => {
-        if (recipeStore.createMutation.isLoading) return
-        if (isEditMode) {
-            recipeStore.updateMutation.call(recipeId, { name: localName, description: localDescription })
-                .then(() => recipeStore.listQuery.call())
+        if (recipeStore.createMutation.isPending) return
+        if (isUpdate) {
+            recipeStore.updateMutation.mutate({ id: recipeId, payload: { name: localName, description: localDescription } })
         } else {
-            recipeStore.createMutation.call({ name: localName, description: localDescription })
-                .then(() => recipeStore.listQuery.call())
-                .then(() => navigate({ to: `/recipe/${recipeStore.createMutation.data}/edit` }))
+            recipeStore.createMutation.mutateAsync({ payload: { name: localName, description: localDescription } })
+                .then((createdRecipe) => {
+                    /*
+                     * Setting isUpdate and updatedRecipe before navigation to avoid the form blinking when navigating to the update page.
+                     */
+                    setIsUpdate(true)
+                    setUpdatedRecipe(createdRecipe)
+                    return navigate({
+                        to: '/recipe/$id/update',
+                        params: { id: createdRecipe.id },
+                        replace: true,
+                    })
+                })
         }
     }
 
     return <>
         <Navbar title="Make a recipe" backlink="/" />
 
-        {isEditMode && !editedRecipe
+        {isUpdate && !updatedRecipe
             ?
-            <div className="container mx-auto p-4">Recipe not found</div>
+            <>
+                {recipeStore.listQuery.isLoading
+                    ?
+                    <div className="container mx-auto p-4 text-center">
+                        <span className="loading loading-spinner loading-xl"></span>
+                    </div>
+                    :
+                    <div className="container mx-auto p-4">Recipe not found</div>
+                }
+            </>
             :
             <div className="container mx-auto p-4">
                 <div className="lg:px-[20%]">
-                    <div className="flex flex-col gap-4">
+                <div className="flex flex-col gap-4">
                         <h1 className="hidden lg:block text-2xl font-bold">Make a recipe</h1>
                         <p>
                             Create a recipe to share with your friends. You can add ingredients, steps, and more.
@@ -63,5 +85,5 @@ export function RecipeFormView() {
                 </div>
             </div>
         }
-    </>
-}
+            </>
+        }

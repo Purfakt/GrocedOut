@@ -1,17 +1,17 @@
-import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 
 import '@/assets/styles/main.css'
 import { RouterProvider } from '@/router.jsx'
 import { RecipeStoreProvider } from '@/stores/recipe.store.jsx'
 import { AuthStoreProvider } from '@/stores/auth.store.jsx'
+import { TanstackQueryProvider } from '@/services/tanstackQuery.jsx'
 
 createRoot(document.getElementById('root')).render(
-    <StrictMode>
+    <TanstackQueryProvider>
         <AuthStoreProvider>
             <RecipeStoreProvider>
-                <RouterProvider />
+                    <RouterProvider />
             </RecipeStoreProvider>
         </AuthStoreProvider>
-    </StrictMode>,
+    </TanstackQueryProvider>
 )

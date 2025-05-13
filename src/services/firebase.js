@@ -1,6 +1,6 @@
 import { initializeApp } from 'firebase/app'
 import { getAuth, connectAuthEmulator } from 'firebase/auth'
-import { getFirestore, connectFirestoreEmulator, collection, doc, getDocs, getDoc, addDoc, updateDoc, deleteDoc } from 'firebase/firestore'
+import { getFirestore, connectFirestoreEmulator, collection, doc, getDocs, addDoc, updateDoc, deleteDoc, query, orderBy } from 'firebase/firestore'
 
 const firebaseConfig = {
     apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
@@ -30,41 +30,71 @@ if (import.meta.env.DEV) {
     )
 }
 
-export const getCollection = async (collectionName) => {
-    console.log('Getting collection:', collectionName)
-    const querySnapshot = await getDocs(collection(db, collectionName))
-    const collectionData = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }))
-    console.log('Collection data:', collectionData)
-    return collectionData
-}
-
-export const getDocument = async (collectionName, documentId) => {
-    console.log('Getting document from collection:', collectionName, 'with id:', documentId)
-    const docRef = doc(db, collectionName, documentId)
-    const docSnap = await getDoc(docRef)
-    if (docSnap.exists()) {
-        console.log('Document data:', docSnap.data())
-        return { id: docSnap.id, ...docSnap.data() }
-    } else {
-        return null
+const delay = async () => {
+    if (import.meta.env.VITE_FIREBASE_FIRESTORE_EMULATOR_DELAY) {
+        console.log('Delaying for', import.meta.env.VITE_FIREBASE_FIRESTORE_EMULATOR_DELAY, 'ms')
+        return new Promise(resolve => setTimeout(resolve, import.meta.env.VITE_FIREBASE_FIRESTORE_EMULATOR_DELAY))
     }
 }
 
+export const getCollection = async (collectionName) => {
+    console.log('%c%s %c%s',
+        'color: #8BE9FDFF', 'Getting collection:',
+        'color: #FF79C6FF', collectionName
+    )
+    await delay()
+    const recipesRef = collection(db, collectionName)
+    const q = query(recipesRef, orderBy('createdAt', 'desc'))
+    const querySnapshot = await getDocs(q)
+    const collectionData = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }))
+    console.log('%c%s', 'color: #51FA7BFF', 'Collection data:', collectionData)
+    return collectionData
+}
+
 export const createDocument = async (collectionName, data) => {
-    console.log('Creating document in collection:', collectionName, 'with data:', data)
-    const docRef = await addDoc(collection(db, collectionName), data)
-    console.log('Document created with ID:', docRef.id)
-    return docRef.id
+    console.log('%c%s %c%s %c%s',
+        'color: #8BE9FDFF', 'Creating document in collection:',
+        'color: #FF79C6FF', collectionName,
+        'color: #8BE9FDFF', 'with data:', data
+    )
+    await delay()
+    const docRef = await addDoc(collection(db, collectionName), { ...data, createdAt: new Date() })
+    console.log('%c%s %c%s',
+        'color: #51FA7BFF', 'Document created with ID:',
+        'color: #FF79C6FF', docRef.id
+    )
+    return docRef
 }
 
 export const updateDocument = async (collectionName, documentId, data) => {
-    console.log('Updating document in collection:', collectionName, 'with id:', documentId, 'and data:', data)
+    console.log('%c%s %c%s %c%s %c%s %c%s',
+        'color: #8BE9FDFF', 'Updating document in collection:',
+        'color: #FF79C6FF', collectionName,
+        'color: #8BE9FDFF', 'with id:',
+        'color: #FF79C6FF', documentId,
+        'color: #8BE9FDFF', 'and data:', data
+    )
+    await delay()
     const docRef = doc(db, collectionName, documentId)
-    return updateDoc(docRef, data)
+    await updateDoc(docRef, data)
+    console.log('%c%s %c%s',
+        'color: #51FA7BFF', 'Document updated with ID:',
+        'color: #FF79C6FF', documentId,
+    )
 }
 
 export const deleteDocument = async (collectionName, documentId) => {
-    console.log('Deleting document in collection:', collectionName, 'with id:', documentId)
+    console.log('%c%s %c%s %c%s %c%s',
+        'color: #8BE9FDFF', 'Deleting document in collection:',
+        'color: #FF79C6FF', collectionName,
+        'color: #8BE9FDFF', 'with id:',
+        'color: #FF79C6FF', documentId
+    )
+    await delay()
     const docRef = doc(db, collectionName, documentId)
-    return deleteDoc(docRef)
+    await deleteDoc(docRef)
+    console.log('%c%s %c%s',
+        'color: #51FA7BFF', 'Document deleted with ID:',
+        'color: #FF79C6FF', documentId
+    )
 }

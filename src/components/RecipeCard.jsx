@@ -1,5 +1,5 @@
 import { UiIcon } from '@lib/components/UiIcon.jsx'
-import { useDependentState } from '@/core/useDependentState.jsx'
+import { useStateWithDeps } from '@/utils/useStateWithDeps.jsx'
 
 export function RecipeCard({
     className = '',
@@ -11,7 +11,7 @@ export function RecipeCard({
     onClick = () => { },
     onSetQuantity = (quantity) => { },
 }) {
-    const [localQuantity, setLocalQuantity] = useDependentState(parseInt(quantity.toString()) || 0, [quantity])
+    const [localQuantity, setLocalQuantity] = useStateWithDeps(parseInt(quantity.toString()) || 0, [quantity])
 
     return (
         <div className={`card bg-base-100 card-border border-base-300 card-sm ${className}`} onClick={onClick}>

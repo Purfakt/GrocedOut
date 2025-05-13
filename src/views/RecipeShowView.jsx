@@ -17,8 +17,7 @@ export function RecipeShowView() {
     const onDelete = async () => {
         if (isDeleteLoading) return
         setIsDeleteLoading(true)
-        await recipeStore.deleteMutation.call(recipeId)
-        await recipeStore.listQuery.call()
+        await recipeStore.deleteMutation.mutateAsync({ id: recipeId })
         setIsDeleteLoading(false)
         return navigate({ to: '/' })
     }
@@ -47,7 +46,7 @@ export function RecipeShowView() {
                     </div>
 
                     <QuickActions>
-                        <Link to={`/recipe/${recipe.id}/edit`}>
+                        <Link to={`/recipe/${recipe.id}/update`}>
                             <QuickActionButton>
                                 <UiIcon icon="edit" size="2xl" />
                             </QuickActionButton>
