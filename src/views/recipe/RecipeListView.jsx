@@ -4,7 +4,6 @@ import { UiIcon } from '@lib/components/UiIcon.jsx'
 import { QuickActions } from '@/components/QuickActions.jsx'
 import { QuickActionButton } from '@/components/QuickActionButton.jsx'
 import { useRecipeStore } from '@/stores/recipe.store.jsx'
-import { Navbar } from '@/components/Navbar.jsx'
 
 export function RecipeListView() {
     const recipeStore = useRecipeStore()
@@ -15,8 +14,6 @@ export function RecipeListView() {
     }
 
     return <>
-        <Navbar />
-
         {recipeStore.listQuery.isLoading
             ?
             <div className="container mx-auto p-4 text-center">

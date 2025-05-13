@@ -1,35 +1,26 @@
-import { Navbar } from '@/components/Navbar.jsx'
-import { useNavigate, useParams } from '@tanstack/react-router'
+import { useNavigate } from '@tanstack/react-router'
 import { useRecipeStore } from '@/stores/recipe.store.jsx'
 import { useStateWithDeps } from '@/utils/useStateWithDeps.jsx'
-import { useState } from 'react'
 
-export function RecipeFormView() {
+export function RecipeFormView({ recipe }) {
     const navigate = useNavigate()
     const recipeStore = useRecipeStore()
+    const isUpdate = recipe !== undefined
 
-    const { id: recipeId } = useParams({ strict: false })
-    /*
-     * isUpdate and updatedRecipe could be simple derived values, but using useState avoids the form from blinking when navigating to the update page.
-     */
-    const [isUpdate, setIsUpdate] = useState(!!recipeId)
-    const [updatedRecipe, setUpdatedRecipe] = useStateWithDeps(isUpdate ? recipeStore.getById(recipeId) : null, [recipeStore.listQuery.data])
-
-    const [localName, setLocalName] = useStateWithDeps(updatedRecipe?.name || '', [updatedRecipe?.name])
-    const [localDescription, setLocalDescription] = useStateWithDeps(updatedRecipe?.description || '', [updatedRecipe?.description])
+    const [localName, setLocalName] = useStateWithDeps(recipe?.name || '', [recipe])
+    const [localDescription, setLocalDescription] = useStateWithDeps(recipe?.description || '', [recipe])
 
     const onBlur = () => {
         if (recipeStore.createMutation.isPending) return
         if (isUpdate) {
-            recipeStore.updateMutation.mutate({ id: recipeId, payload: { name: localName, description: localDescription } })
+            recipeStore.updateMutation.mutate({ id: recipe.id, payload: { name: localName, description: localDescription } })
         } else {
             recipeStore.createMutation.mutateAsync({ payload: { name: localName, description: localDescription } })
-                .then((createdRecipe) => {
-                    /*
-                     * Setting isUpdate and updatedRecipe before navigation to avoid the form blinking when navigating to the update page.
-                     */
-                    setIsUpdate(true)
-                    setUpdatedRecipe(createdRecipe)
+                .then(async (createdRecipe) => {
+                    // If we navigate immediately, the "update" route component function execution happens in the same render loop,
+                    // the mutation is done and the listQuery is invalidated, but the new listQuery.data state is not yet available.
+                    // It causes the recipe to be null in the "update" route component function for one frame, and the UI to flash "Recipe not found".
+                    await new Promise(resolve => setTimeout(resolve))
                     return navigate({
                         to: '/recipe/$id/update',
                         params: { id: createdRecipe.id },
@@ -40,9 +31,7 @@ export function RecipeFormView() {
     }
 
     return <>
-        <Navbar title="Make a recipe" backlink="/" />
-
-        {isUpdate && !updatedRecipe
+        {isUpdate && recipe === null
             ?
             <>
                 {recipeStore.listQuery.isLoading
@@ -85,5 +74,5 @@ export function RecipeFormView() {
                 </div>
             </div>
         }
-            </>
-        }
+    </>
+}

@@ -5,8 +5,8 @@ import { auth } from '@/services/firebase.js'
 /*
  * Store
  */
+/* eslint-disable react-hooks/rules-of-hooks */
 export function createAuthStore() {
-    /* eslint-disable react-hooks/rules-of-hooks */
     const [user, setUser] = useState(null)
     const [token, setToken] = useState(null)
     const [isAdmin, setIsAdmin] = useState(false)

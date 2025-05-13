@@ -43,7 +43,7 @@ export function Navbar({
                             Grocery
                         </Link>
                         {authStore.isAdmin &&
-                            <Link to="/ingredient" role="tab" className={`tab h-full flex gap-2 ${routeIngredientsActive ? 'tab-active' : ''}`}>
+                            <Link to="/ingredient/ingredient" role="tab" className={`tab h-full flex gap-2 ${routeIngredientsActive ? 'tab-active' : ''}`}>
                                 <UiIcon icon="grocery" size="2xl" />
                                 Ingredients
                             </Link>
@@ -92,7 +92,7 @@ export function Navbar({
                         <span className="dock-label text-base!">Grocery</span>
                     </Link>
                     {authStore.isAdmin &&
-                        <Link to="/ingredient" className={`${routeIngredientsActive ? 'dock-active' : ''}`}>
+                        <Link to="/ingredient/ingredient" className={`${routeIngredientsActive ? 'dock-active' : ''}`}>
                             <UiIcon icon="grocery" size="2xl" />
                             <span className="dock-label text-base!">Ingredients</span>
                         </Link>

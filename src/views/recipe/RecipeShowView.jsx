@@ -1,30 +1,24 @@
-import { Link, useNavigate, useParams } from '@tanstack/react-router'
+import { Link, useNavigate } from '@tanstack/react-router'
 import { UiIcon } from '@lib/components/UiIcon.jsx'
 import { QuickActions } from '@/components/QuickActions.jsx'
 import { QuickActionButton } from '@/components/QuickActionButton.jsx'
-import { Navbar } from '@/components/Navbar.jsx'
 import { useRecipeStore } from '@/stores/recipe.store.jsx'
 import { useState } from 'react'
 
-export function RecipeShowView() {
+export function RecipeShowView({ recipe }) {
     const navigate = useNavigate()
     const recipeStore = useRecipeStore()
-
-    const { id: recipeId } = useParams({ strict: false })
-    const recipe = recipeStore.getById(recipeId)
 
     const [isDeleteLoading, setIsDeleteLoading] = useState(false)
     const onDelete = async () => {
         if (isDeleteLoading) return
         setIsDeleteLoading(true)
-        await recipeStore.deleteMutation.mutateAsync({ id: recipeId })
+        await recipeStore.deleteMutation.mutateAsync({ id: recipe.id })
         setIsDeleteLoading(false)
         return navigate({ to: '/' })
     }
 
     return <>
-        <Navbar title={recipe?.name} backlink="/" />
-
         {!recipe
             ? (
                 <div className="container mx-auto p-4">Recipe not found</div>
