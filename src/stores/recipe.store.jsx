@@ -1,6 +1,7 @@
 import { getCollection, createDocument, updateDocument, deleteDocument } from '@/services/firebase.js'
 import { createContext, useContext } from 'react'
 import { useMutation, useMutationState, useQuery } from '@tanstack/react-query'
+import { queryClient } from '@/services/tanstackQuery.jsx'
 
 /*
  * Store
@@ -15,11 +16,13 @@ function createRecipeStore() {
     const createMutation = useMutation({
         mutationKey: ['recipeCreate'],
         mutationFn: async (vars) => createDocument('recipes', vars.payload),
+        onSuccess: async () => queryClient.invalidateQueries({ queryKey: ['recipeList'] }),
     })
 
     const updateMutation = useMutation({
         mutationKey: ['recipeUpdate'],
         mutationFn: async (vars) => updateDocument('recipes', vars.id, vars.payload),
+        onSuccess: async () => queryClient.invalidateQueries({ queryKey: ['recipeList'] }),
     })
     const updateMutationVars = useMutationState({
         filters: { mutationKey: ['recipeUpdate'] },
@@ -29,6 +32,7 @@ function createRecipeStore() {
     const deleteMutation = useMutation({
         mutationKey: ['recipeDelete'],
         mutationFn: async (vars) => deleteDocument('recipes', vars.id),
+        onSuccess: async () => queryClient.invalidateQueries({ queryKey: ['recipeList'] }),
     })
 
     const getById = (id) => listQuery.data?.find(recipe => recipe.id === id)
