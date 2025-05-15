@@ -2,17 +2,17 @@ import { getCollection, createDocument, updateDocument, deleteDocument } from '@
 import { createContext, useContext } from 'react'
 import { useMutation, useMutationState, useQuery } from '@tanstack/react-query'
 import { queryClient } from '@/services/tanstackQuery.jsx'
+import { sanitizeUndefinedRecursive } from '@/utils/object.js'
 
 /*
  * Mapping
  */
-const itemMapper = (recipe) => {
-    const mappedRecipe = {
-        name: recipe.name || '',
-        description: recipe.description || '',
-        quantity: recipe.quantity || 0,
-    }
-    return mappedRecipe
+const recipeMapper = (recipe, partial = false) => {
+    return sanitizeUndefinedRecursive({
+        name: recipe.name || partial ? undefined : '',
+        description: recipe.description || partial ? undefined : '',
+        quantity: recipe.quantity || partial ? undefined : 0,
+    })
 }
 
 /*
@@ -27,13 +27,13 @@ function createRecipeStore() {
 
     const createMutation = useMutation({
         mutationKey: ['recipeCreate'],
-        mutationFn: async (vars) => createDocument('recipes', itemMapper(vars.payload)),
+        mutationFn: async (vars) => createDocument('recipes', recipeMapper(vars.payload)),
         onSuccess: async () => queryClient.invalidateQueries({ queryKey: ['recipeList'] }),
     })
 
     const updateMutation = useMutation({
         mutationKey: ['recipeUpdate'],
-        mutationFn: async (vars) => updateDocument('recipes', vars.id, itemMapper(vars.payload)),
+        mutationFn: async (vars) => updateDocument('recipes', vars.id, recipeMapper(vars.payload, true)),
         onSuccess: async () => queryClient.invalidateQueries({ queryKey: ['recipeList'] }),
     })
     const updateMutationVars = useMutationState({

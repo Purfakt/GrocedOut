@@ -9,8 +9,8 @@ import { sanitizeUndefinedRecursive } from '@/utils/object.js'
  */
 export const ingredientCategoryMapper = (category, partial = false) => {
     return sanitizeUndefinedRecursive({
-        name: category.name ? category.name : partial ? undefined : '',
-        priority: category.priority ? category.priority : partial ? undefined : 0,
+        name: category.name || partial ? undefined : '',
+        priority: category.priority || partial ? undefined : 0,
     })
 }
 
