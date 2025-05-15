@@ -20,7 +20,6 @@ export const ingredientMapper = (ingredient, partial = false) => {
             ...ingredientCategoryMapper(ingredient.category, partial),
         }
     }
-    console.log(mappedIngredient)
     return sanitizeUndefinedRecursive(mappedIngredient)
 }
 
