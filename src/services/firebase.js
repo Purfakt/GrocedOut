@@ -39,7 +39,7 @@ const delay = async () => {
 
 export const getCollection = async (collectionName) => {
     console.log('%c%s %c%s',
-        'color: #8BE9FDFF', 'Getting collection:',
+        'color: #8BE9FDFF', '[GET] Getting collection:',
         'color: #FF79C6FF', collectionName
     )
     await delay()
@@ -47,13 +47,13 @@ export const getCollection = async (collectionName) => {
     const q = query(collectionRef, orderBy('createdAt', 'desc'))
     const querySnapshot = await getDocs(q)
     const collectionData = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }))
-    console.log('%c%s', 'color: #51FA7BFF', 'Collection data:', collectionData)
+    console.log('%c%s', 'color: #51FA7BFF', '[GET] Collection data:', collectionData)
     return collectionData
 }
 
 export const updateCollection = async (collectionName, data) => {
     console.log('%c%s %c%s %c%s',
-        'color: #8BE9FDFF', 'Updating collection:',
+        'color: #8BE9FDFF', '[UPDATE] Updating collection:',
         'color: #FF79C6FF', collectionName,
         'color: #8BE9FDFF', 'with data:', data
     )
@@ -61,6 +61,13 @@ export const updateCollection = async (collectionName, data) => {
     const collectionRef = collection(db, collectionName)
     const q = query(collectionRef, orderBy('createdAt'))
     const querySnapshot = await getDocs(q)
+    if (querySnapshot.empty) {
+        console.log('%c%s %c%s',
+            'color: #F1FA8CFF', '[UPDATE] No document found for update in collection:',
+            'color: #FF79C6FF', collectionName,
+        )
+        return
+    }
     const batch = writeBatch(db)
     querySnapshot.forEach((doc) => {
         batch.update(doc.ref, {
@@ -70,14 +77,14 @@ export const updateCollection = async (collectionName, data) => {
     })
     await batch.commit()
     console.log('%c%s %c%s',
-        'color: #51FA7BFF', 'Collection updated with data:',
+        'color: #51FA7BFF', '[UPDATE] Collection updated with data:',
         'color: #FF79C6FF', data
     )
 }
 
 export const updateCollectionWhere = async (collectionName, whereTuple, data) => {
     console.log('%c%s %c%s %c%s',
-        'color: #8BE9FDFF', 'Updating collection:',
+        'color: #8BE9FDFF', '[UPDATE] Updating collection:',
         'color: #FF79C6FF', collectionName,
         'color: #8BE9FDFF', 'with data:', data
     )
@@ -85,6 +92,13 @@ export const updateCollectionWhere = async (collectionName, whereTuple, data) =>
     const collectionRef = collection(db, collectionName)
     const q = query(collectionRef, orderBy('createdAt'), where(whereTuple[0], whereTuple[1], whereTuple[2]))
     const querySnapshot = await getDocs(q)
+    if (querySnapshot.empty) {
+        console.log('%c%s %c%s',
+            'color: #F1FA8CFF', '[UPDATE] No document found for update in collection:',
+            'color: #FF79C6FF', collectionName,
+        )
+        return
+    }
     const batch = writeBatch(db)
     querySnapshot.forEach((doc) => {
         batch.update(doc.ref, {
@@ -94,14 +108,14 @@ export const updateCollectionWhere = async (collectionName, whereTuple, data) =>
     })
     await batch.commit()
     console.log('%c%s %c%s',
-        'color: #51FA7BFF', 'Collection updated with data:',
+        'color: #51FA7BFF', '[UPDATE] Collection updated with data:',
         'color: #FF79C6FF', data
     )
 }
 
 export const createDocument = async (collectionName, data) => {
     console.log('%c%s %c%s %c%s',
-        'color: #8BE9FDFF', 'Creating document in collection:',
+        'color: #8BE9FDFF', '[CREATE] Creating document in collection:',
         'color: #FF79C6FF', collectionName,
         'color: #8BE9FDFF', 'with data:', data
     )
@@ -112,7 +126,7 @@ export const createDocument = async (collectionName, data) => {
         updatedAt: new Date(),
     })
     console.log('%c%s %c%s',
-        'color: #51FA7BFF', 'Document created with ID:',
+        'color: #51FA7BFF', '[CREATE] Document created with ID:',
         'color: #FF79C6FF', docRef.id
     )
     return docRef
@@ -120,7 +134,7 @@ export const createDocument = async (collectionName, data) => {
 
 export const updateDocument = async (collectionName, documentId, data) => {
     console.log('%c%s %c%s %c%s %c%s %c%s',
-        'color: #8BE9FDFF', 'Updating document in collection:',
+        'color: #8BE9FDFF', '[UPDATE] Updating document in collection:',
         'color: #FF79C6FF', collectionName,
         'color: #8BE9FDFF', 'with id:',
         'color: #FF79C6FF', documentId,
@@ -128,28 +142,42 @@ export const updateDocument = async (collectionName, documentId, data) => {
     )
     await delay()
     const docRef = doc(db, collectionName, documentId)
+    if (!docRef) {
+        console.log('%c%s %c%s',
+            'color: #F1FA8CFF', '[UPDATE] No document found for update in collection:',
+            'color: #FF79C6FF', collectionName,
+        )
+        return
+    }
     await updateDoc(docRef, {
         ...data,
         updatedAt: new Date(),
     })
     console.log('%c%s %c%s',
-        'color: #51FA7BFF', 'Document updated with ID:',
+        'color: #51FA7BFF', '[UPDATE] Document updated with ID:',
         'color: #FF79C6FF', documentId,
     )
 }
 
 export const deleteDocument = async (collectionName, documentId) => {
     console.log('%c%s %c%s %c%s %c%s',
-        'color: #8BE9FDFF', 'Deleting document in collection:',
+        'color: #8BE9FDFF', '[DELETE] Deleting document in collection:',
         'color: #FF79C6FF', collectionName,
         'color: #8BE9FDFF', 'with id:',
         'color: #FF79C6FF', documentId
     )
     await delay()
     const docRef = doc(db, collectionName, documentId)
+    if (!docRef) {
+        console.log('%c%s %c%s',
+            'color: #F1FA8CFF', '[DELETE] No document found for delete in collection:',
+            'color: #FF79C6FF', collectionName,
+        )
+        return
+    }
     await deleteDoc(docRef)
     console.log('%c%s %c%s',
-        'color: #51FA7BFF', 'Document deleted with ID:',
+        'color: #51FA7BFF', '[DELETE] Document deleted with ID:',
         'color: #FF79C6FF', documentId
     )
 }
