@@ -10,9 +10,9 @@ import { sanitizeUndefinedRecursive } from '@/utils/object.js'
  */
 export const ingredientMapper = (ingredient, partial = false) => {
     const mappedIngredient = {
-        name: ingredient.name || partial ? undefined : '',
-        priority: ingredient.priority || partial ? undefined : 0,
-        category: ingredient.category || partial ? undefined : null,
+        name: ingredient.name ?? (partial ? undefined : ''),
+        priority: ingredient.priority ?? (partial ? undefined : 0),
+        category: ingredient.category ?? (partial ? undefined : null),
     }
     if (ingredient.category) {
         mappedIngredient.category = {
@@ -20,6 +20,7 @@ export const ingredientMapper = (ingredient, partial = false) => {
             ...ingredientCategoryMapper(ingredient.category, partial),
         }
     }
+    console.log(mappedIngredient)
     return sanitizeUndefinedRecursive(mappedIngredient)
 }
 

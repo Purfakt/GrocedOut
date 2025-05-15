@@ -8,9 +8,9 @@ import { sanitizeUndefinedRecursive } from '@/utils/object.js'
  * Mapping
  */
 const recipeMapper = (recipe, partial = false) => sanitizeUndefinedRecursive({
-    name: recipe.name || partial ? undefined : '',
-    description: recipe.description || partial ? undefined : '',
-    quantity: recipe.quantity || partial ? undefined : 0,
+    name: recipe.name ?? (partial ? undefined : ''),
+    description: recipe.description ?? (partial ? undefined : ''),
+    quantity: recipe.quantity ?? (partial ? undefined : 0),
 })
 
 /*

@@ -16,8 +16,8 @@ export function IngredientCategoryListView() {
     /*
      * Actions
      */
-    const [updateId, setUpdateId] = useState(null)
-    const isUpdate = updateId !== null
+    const [currentId, setCurrentId] = useState(null)
+    const isUpdate = currentId !== null
     const startCreate = () => {
         resetForm()
         document.getElementById('modal-form').showModal()
@@ -32,15 +32,15 @@ export function IngredientCategoryListView() {
         resetForm()
         document.getElementById('modal-form').close()
     }
-    const startUpdate = (ingredient) => {
-        setUpdateId(ingredient.id)
-        setLocalName(ingredient.name)
-        setLocalPriority(ingredient.priority)
+    const startUpdate = (category) => {
+        setCurrentId(category.id)
+        setLocalName(category.name || '')
+        setLocalPriority(category.priority || 0)
         document.getElementById('modal-form').showModal()
     }
     const update = async () => {
         await ingredientCategoryStore.updateMutation.mutateAsync({
-            id: updateId,
+            id: currentId,
             payload: {
                 name: localName,
                 priority: localPriority
@@ -49,9 +49,18 @@ export function IngredientCategoryListView() {
         resetForm()
         document.getElementById('modal-form').close()
     }
+    const startDelete = (category) => {
+        setCurrentId(category.id)
+        document.getElementById('modal-delete').showModal()
+    }
+    const deleteCategory = async () => {
+        await ingredientCategoryStore.deleteMutation.mutateAsync({ id: currentId })
+        setCurrentId(null)
+        document.getElementById('modal-delete').close()
+    }
 
     const resetForm = () => {
-        setUpdateId(null)
+        setCurrentId(null)
         setLocalName('')
         setLocalPriority(0)
     }
@@ -80,12 +89,18 @@ export function IngredientCategoryListView() {
                                 {ingredientCategoryStore.listQuery.data?.map(category => (
                                     <tr key={category.id}>
                                         <td>{category.name}</td>
-                                        <td className="flex justify-end gap-2">
+                                        <td className="flex justify-end gap-1">
                                             <button
-                                                className="btn btn-ghost btn-sm"
+                                                className="btn btn-ghost btn-sm px-2"
                                                 onClick={() => startUpdate(category)}
                                             >
                                                 <UiIcon icon="edit" size="lg" />
+                                            </button>
+                                            <button
+                                                className="btn btn-ghost btn-sm px-2"
+                                                onClick={() => startDelete(category)}
+                                            >
+                                                <UiIcon icon="delete" size="lg" />
                                             </button>
                                         </td>
                                     </tr>
@@ -140,11 +155,34 @@ export function IngredientCategoryListView() {
                             >
                                 {isUpdate
                                     ? ingredientCategoryStore.updateMutation.isPending
-                                        ? <span className="loading loading-spinner loading-sm"></span>
+                                        ?
+                                        <span className="loading loading-spinner loading-sm"></span>
                                         : 'Update'
                                     : ingredientCategoryStore.createMutation.isPending
-                                        ? <span className="loading loading-spinner loading-sm"></span>
+                                        ?
+                                        <span className="loading loading-spinner loading-sm"></span>
                                         : 'Create'}
+                            </button>
+                        </div>
+                    </div>
+                    <form method="dialog" className="modal-backdrop">
+                        <button>close</button>
+                    </form>
+                </dialog>
+
+                <dialog id="modal-delete" className="modal">
+                    <div className="modal-box">
+                        <h3 className="text-lg font-bold">Delete category</h3>
+                        <p>Are you sure you want to delete this category?</p>
+                        <div className="modal-action">
+                            <button
+                                className="btn btn-error"
+                                onClick={deleteCategory}
+                            >
+                                {ingredientCategoryStore.deleteMutation.isPending
+                                    ?
+                                    <span className="loading loading-spinner loading-sm"></span>
+                                    : 'Delete'}
                             </button>
                         </div>
                     </div>

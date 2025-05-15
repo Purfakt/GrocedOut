@@ -8,8 +8,8 @@ import { sanitizeUndefinedRecursive } from '@/utils/object.js'
  * Mapping
  */
 export const ingredientCategoryMapper = (category, partial = false) => sanitizeUndefinedRecursive({
-    name: category.name || partial ? undefined : '',
-    priority: category.priority || partial ? undefined : 0,
+    name: category.name ?? (partial ? undefined : ''),
+    priority: category.priority ?? (partial ? undefined : 0),
 })
 
 /*
@@ -51,8 +51,16 @@ export function createIngredientCategoryStore() {
 
     const deleteMutation = useMutation({
         mutationKey: ['ingredientCategoryDelete'],
-        mutationFn: async (vars) => deleteDocument('ingredientCategories', vars.id),
-        onSuccess: async () => queryClient.invalidateQueries({ queryKey: ['ingredientCategoryList'] }),
+        mutationFn: async (vars) => Promise.all([
+            deleteDocument('ingredientCategories', vars.id),
+            updateCollectionWhere('ingredients', ['category.id', '==', vars.id], {
+                category: null,
+            })
+        ]),
+        onSuccess: async () => Promise.all([
+            queryClient.invalidateQueries({ queryKey: ['ingredientCategoryList'] }),
+            queryClient.invalidateQueries({ queryKey: ['ingredientList'] }),
+        ]),
     })
 
     const getById = (id) => listQuery.data?.find(ingredientCategory => ingredientCategory.id === id) || null

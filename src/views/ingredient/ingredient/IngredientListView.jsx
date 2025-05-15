@@ -19,8 +19,8 @@ export function IngredientListView() {
     /*
      * Actions
      */
-    const [updateId, setUpdateId] = useState(null)
-    const isUpdate = updateId !== null
+    const [currentId, setCurrentId] = useState(null)
+    const isUpdate = currentId !== null
     const startCreate = () => {
         resetForm()
         document.getElementById('modal-form').showModal()
@@ -37,27 +37,36 @@ export function IngredientListView() {
         document.getElementById('modal-form').close()
     }
     const startUpdate = (ingredient) => {
-        setUpdateId(ingredient.id)
-        setLocalName(ingredient.name)
-        setLocalCategory(ingredient.category?.id)
-        setLocalPriority(ingredient.priority)
+        setCurrentId(ingredient.id)
+        setLocalName(ingredient.name || '')
+        setLocalCategory(ingredient.category?.id || null)
+        setLocalPriority(ingredient.priority || 0)
         document.getElementById('modal-form').showModal()
     }
     const update = async () => {
         await ingredientStore.updateMutation.mutateAsync({
-            id: updateId,
+            id: currentId,
             payload: {
                 name: localName,
-                category: localCategory,
+                category: ingredientCategoryStore.getById(localCategory) || null,
                 priority: localPriority
             }
         })
         resetForm()
         document.getElementById('modal-form').close()
     }
+    const startDelete = (ingredient) => {
+        setCurrentId(ingredient.id)
+        document.getElementById('modal-delete').showModal()
+    }
+    const deleteIngredient = async () => {
+        await ingredientStore.deleteMutation.mutateAsync({ id: currentId })
+        setCurrentId(null)
+        document.getElementById('modal-delete').close()
+    }
 
     const resetForm = () => {
-        setUpdateId(null)
+        setCurrentId(null)
         setLocalName('')
         setLocalCategory(null)
         setLocalPriority(0)
@@ -91,12 +100,18 @@ export function IngredientListView() {
                                         <td>
                                             {ingredient.category && <span className="badge bg-base-200 border-base-300">{ingredient.category.name}</span>}
                                         </td>
-                                        <td className="flex justify-end gap-2">
+                                        <td className="flex justify-end gap-1">
                                             <button
-                                                className="btn btn-ghost btn-sm"
+                                                className="btn btn-ghost btn-sm px-2"
                                                 onClick={() => startUpdate(ingredient)}
                                             >
                                                 <UiIcon icon="edit" size="lg" />
+                                            </button>
+                                            <button
+                                                className="btn btn-ghost btn-sm px-2"
+                                                onClick={() => startDelete(ingredient)}
+                                            >
+                                                <UiIcon icon="delete" size="lg" />
                                             </button>
                                         </td>
                                     </tr>
@@ -135,12 +150,11 @@ export function IngredientListView() {
                                 <fieldset className="fieldset">
                                     <legend className="fieldset-legend">Category</legend>
                                     <select
-                                        defaultValue=""
                                         value={localCategory?.toString() || ''}
                                         className="select w-full"
                                         onChange={(e) => setLocalCategory(e.target.value)}
                                     >
-                                        <option disabled={true} value="">Pick a category</option>
+                                        <option value="">No category</option>
                                         {ingredientCategoryStore.listQuery.data?.map(category => (
                                             <option key={category.id} value={category.id}>{category.name}</option>
                                         ))}
@@ -170,6 +184,26 @@ export function IngredientListView() {
                                     : ingredientStore.createMutation.isPending
                                         ? <span className="loading loading-spinner loading-sm"></span>
                                         : 'Create'}
+                            </button>
+                        </div>
+                    </div>
+                    <form method="dialog" className="modal-backdrop">
+                        <button>close</button>
+                    </form>
+                </dialog>
+
+                <dialog id="modal-delete" className="modal">
+                    <div className="modal-box">
+                        <h3 className="text-lg font-bold">Delete ingredient</h3>
+                        <p>Are you sure you want to delete this ingredient?</p>
+                        <div className="modal-action">
+                            <button
+                                className="btn btn-error"
+                                onClick={deleteIngredient}
+                            >
+                                {ingredientStore.deleteMutation.isPending
+                                    ? <span className="loading loading-spinner loading-sm"></span>
+                                    : 'Delete'}
                             </button>
                         </div>
                     </div>
