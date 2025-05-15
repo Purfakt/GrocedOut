@@ -1,4 +1,5 @@
 import { createRootRoute, createRoute, createRouter, RouterProvider as TanstackRouterProvider, useParams, useRouteContext, useRouterState } from '@tanstack/react-router'
+import { NotFoundView } from '@/views/NotFoundView.jsx'
 import { Layout } from '@/views/Layout'
 import { RecipeListView } from '@/views/recipe/RecipeListView.jsx'
 import { RecipeShowView } from '@/views/recipe/RecipeShowView.jsx'
@@ -10,27 +11,34 @@ import { getTanstackQueryContext } from '@/services/tanstackQuery.jsx'
 import { useRecipeStore } from '@/stores/recipe.store.jsx'
 
 const rootRoute = createRootRoute({
+    notFoundComponent: NotFoundView
+})
+
+const layoutRoute = createRoute({
+    id: 'layout',
+    getParentRoute: () => rootRoute,
     component: () => {
         const matches = useRouterState({ select: (s) => s.matches })
+        console.log(matches)
 
         const matchWithTitle = [...matches]
             .reverse()
             .find((d) => d.context.title)
 
         return <Layout title={matchWithTitle?.context.title || 'My App'} />
-    },
+    }
 })
 
-const ingredientLayoutRoute = createRoute({
-    getParentRoute: () => rootRoute,
+const layoutIngredientRoute = createRoute({
+    getParentRoute: () => layoutRoute,
     path: '/ingredient',
     component: IngredientLayout,
 })
 
-const routeTree = rootRoute
+const routeTree = layoutRoute
     .addChildren([
         createRoute({
-            getParentRoute: () => rootRoute,
+            getParentRoute: () => layoutRoute,
             path: '/',
             component: RecipeListView,
             context: () => ({
@@ -38,21 +46,21 @@ const routeTree = rootRoute
             }),
         }),
         createRoute({
-            getParentRoute: () => rootRoute,
+            getParentRoute: () => layoutRoute,
             path: '/recipe/$id',
             component: () => {
                 const { id } = useParams({ strict: false })
                 const recipeStore = useRecipeStore()
                 const recipe = recipeStore.getById(id)
 
-                const context = useRouteContext({ from: '__root__' })
+                const context = useRouteContext({ from: 'layout' })
                 context.title = recipe?.name || 'Recipe'
 
                 return <RecipeShowView recipe={recipe} />
             },
         }),
         createRoute({
-            getParentRoute: () => rootRoute,
+            getParentRoute: () => layoutRoute,
             path: '/recipe/create',
             component: RecipeFormView,
             context: () => ({
@@ -60,23 +68,23 @@ const routeTree = rootRoute
             }),
         }),
         createRoute({
-            getParentRoute: () => rootRoute,
+            getParentRoute: () => layoutRoute,
             path: '/recipe/$id/update',
             component: () => {
                 const { id } = useParams({ strict: false })
                 const recipeStore = useRecipeStore()
                 const recipe = recipeStore.getById(id)
 
-                const context = useRouteContext({ from: '__root__' })
+                const context = useRouteContext({ from: 'layout' })
                 context.title = recipe?.name || 'Recipe'
 
                 return <RecipeFormView recipe={recipe} />
             },
         }),
-        ingredientLayoutRoute
+        layoutIngredientRoute
             .addChildren([
                 createRoute({
-                    getParentRoute: () => ingredientLayoutRoute,
+                    getParentRoute: () => layoutIngredientRoute,
                     path: '/ingredient',
                     component: IngredientListView,
                     context: () => ({
@@ -84,7 +92,7 @@ const routeTree = rootRoute
                     }),
                 }),
                 createRoute({
-                    getParentRoute: () => ingredientLayoutRoute,
+                    getParentRoute: () => layoutIngredientRoute,
                     path: '/category',
                     component: IngredientCategoryListView,
                 }),
@@ -92,7 +100,9 @@ const routeTree = rootRoute
     ])
 
 const router = createRouter({
-    routeTree,
+    routeTree: rootRoute.addChildren([
+        routeTree,
+    ]),
     context: {
         ...getTanstackQueryContext(),
     },
@@ -100,6 +110,7 @@ const router = createRouter({
     scrollRestoration: true,
     defaultStructuralSharing: true,
     defaultPreloadStaleTime: 0,
+    notFoundMode: 'root',
 })
 
 export const RouterProvider = function () {
