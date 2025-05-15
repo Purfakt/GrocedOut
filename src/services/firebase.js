@@ -31,7 +31,7 @@ if (import.meta.env.DEV) {
 }
 
 const delay = async () => {
-    if (import.meta.env.VITE_FIREBASE_FIRESTORE_EMULATOR_DELAY) {
+    if (import.meta.env.VITE_FIREBASE_FIRESTORE_EMULATOR_DELAY && import.meta.env.VITE_FIREBASE_FIRESTORE_EMULATOR_DELAY > 0) {
         console.log('Delaying for', import.meta.env.VITE_FIREBASE_FIRESTORE_EMULATOR_DELAY, 'ms')
         return new Promise(resolve => setTimeout(resolve, import.meta.env.VITE_FIREBASE_FIRESTORE_EMULATOR_DELAY))
     }
