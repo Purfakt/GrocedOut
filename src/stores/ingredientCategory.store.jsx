@@ -7,12 +7,10 @@ import { sanitizeUndefinedRecursive } from '@/utils/object.js'
 /*
  * Mapping
  */
-export const ingredientCategoryMapper = (category, partial = false) => {
-    return sanitizeUndefinedRecursive({
-        name: category.name || partial ? undefined : '',
-        priority: category.priority || partial ? undefined : 0,
-    })
-}
+export const ingredientCategoryMapper = (category, partial = false) => sanitizeUndefinedRecursive({
+    name: category.name || partial ? undefined : '',
+    priority: category.priority || partial ? undefined : 0,
+})
 
 /*
  * Store
