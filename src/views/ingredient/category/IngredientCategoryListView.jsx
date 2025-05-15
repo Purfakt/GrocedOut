@@ -79,9 +79,10 @@ export function IngredientCategoryListView() {
                         :
                         <div className="overflow-x-auto rounded-box border border-base-content/5 bg-base-100">
                             <table className="table">
-                                <thead>
+                                <thead className="bg-base-300">
                                 <tr>
                                     <th>Name</th>
+                                    <th>Priority</th>
                                     <th></th>
                                 </tr>
                                 </thead>
@@ -89,6 +90,7 @@ export function IngredientCategoryListView() {
                                 {ingredientCategoryStore.listQuery.data?.map(category => (
                                     <tr key={category.id}>
                                         <td>{category.name}</td>
+                                        <td>{category.priority}</td>
                                         <td className="flex justify-end gap-1">
                                             <button
                                                 className="btn btn-ghost btn-sm px-2"

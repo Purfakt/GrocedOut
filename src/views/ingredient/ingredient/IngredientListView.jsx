@@ -86,10 +86,11 @@ export function IngredientListView() {
                         :
                         <div className="overflow-x-auto rounded-box border border-base-content/5 bg-base-100">
                             <table className="table">
-                                <thead>
+                                <thead className="bg-base-300">
                                 <tr>
                                     <th>Name</th>
                                     <th>Category</th>
+                                    <th>Priority</th>
                                     <th></th>
                                 </tr>
                                 </thead>
@@ -99,6 +100,9 @@ export function IngredientListView() {
                                         <td>{ingredient.name}</td>
                                         <td>
                                             {ingredient.category && <span className="badge bg-base-200 border-base-300">{ingredient.category.name}</span>}
+                                        </td>
+                                        <td>
+                                            {ingredient.priority}
                                         </td>
                                         <td className="flex justify-end gap-1">
                                             <button
