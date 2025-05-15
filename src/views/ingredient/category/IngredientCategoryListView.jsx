@@ -82,10 +82,10 @@ export function IngredientCategoryListView() {
                                         <td>{category.name}</td>
                                         <td className="flex justify-end gap-2">
                                             <button
-                                                className="btn btn-sm btn-info"
+                                                className="btn btn-ghost btn-sm"
                                                 onClick={() => startUpdate(category)}
                                             >
-                                                Edit
+                                                <UiIcon icon="edit" size="lg" />
                                             </button>
                                         </td>
                                     </tr>

@@ -88,13 +88,15 @@ export function IngredientListView() {
                                 {ingredientStore.listQuery.data?.map(ingredient => (
                                     <tr key={ingredient.id}>
                                         <td>{ingredient.name}</td>
-                                        <td>{ingredient.category?.name}</td>
+                                        <td>
+                                            {ingredient.category && <span className="badge bg-base-200 border-base-300">{ingredient.category.name}</span>}
+                                        </td>
                                         <td className="flex justify-end gap-2">
                                             <button
-                                                className="btn btn-sm btn-info"
+                                                className="btn btn-ghost btn-sm"
                                                 onClick={() => startUpdate(ingredient)}
                                             >
-                                                Edit
+                                                <UiIcon icon="edit" size="lg" />
                                             </button>
                                         </td>
                                     </tr>
