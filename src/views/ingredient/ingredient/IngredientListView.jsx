@@ -29,7 +29,7 @@ export function IngredientListView() {
         await ingredientStore.createMutation.mutateAsync({
             payload: {
                 name: localName,
-                category: localCategory,
+                category: ingredientCategoryStore.getById(localCategory) || null,
                 priority: localPriority
             }
         })
