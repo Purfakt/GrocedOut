@@ -1,7 +1,19 @@
 import { getCollection, createDocument, updateDocument, deleteDocument } from '@/services/firebase.js'
-import { createContext, useContext, useState } from 'react'
+import { createContext, useContext } from 'react'
 import { useMutation, useMutationState, useQuery } from '@tanstack/react-query'
 import { queryClient } from '@/services/tanstackQuery.jsx'
+
+/*
+ * Mapping
+ */
+const itemMapper = (recipe) => {
+    const mappedRecipe = {
+        name: recipe.name || '',
+        description: recipe.description || '',
+        quantity: recipe.quantity || 0,
+    }
+    return mappedRecipe
+}
 
 /*
  * Store
@@ -15,13 +27,13 @@ function createRecipeStore() {
 
     const createMutation = useMutation({
         mutationKey: ['recipeCreate'],
-        mutationFn: async (vars) => createDocument('recipes', vars.payload),
+        mutationFn: async (vars) => createDocument('recipes', itemMapper(vars.payload)),
         onSuccess: async () => queryClient.invalidateQueries({ queryKey: ['recipeList'] }),
     })
 
     const updateMutation = useMutation({
         mutationKey: ['recipeUpdate'],
-        mutationFn: async (vars) => updateDocument('recipes', vars.id, vars.payload),
+        mutationFn: async (vars) => updateDocument('recipes', vars.id, itemMapper(vars.payload)),
         onSuccess: async () => queryClient.invalidateQueries({ queryKey: ['recipeList'] }),
     })
     const updateMutationVars = useMutationState({

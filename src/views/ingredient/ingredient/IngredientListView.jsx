@@ -2,9 +2,66 @@ import { UiIcon } from '@lib/components/UiIcon.jsx'
 import { QuickActions } from '@/components/QuickActions.jsx'
 import { QuickActionButton } from '@/components/QuickActionButton.jsx'
 import { useIngredientStore } from '@/stores/ingredient.store.jsx'
+import { useState } from 'react'
+import { useIngredientCategoryStore } from '@/stores/ingredientCategory.store.jsx'
 
 export function IngredientListView() {
     const ingredientStore = useIngredientStore()
+    const ingredientCategoryStore = useIngredientCategoryStore()
+
+    /*
+     * Form
+     */
+    const [localName, setLocalName] = useState('')
+    const [localCategory, setLocalCategory] = useState(null)
+    const [localPriority, setLocalPriority] = useState(0)
+
+    /*
+     * Actions
+     */
+    const [updateId, setUpdateId] = useState(null)
+    const isUpdate = updateId !== null
+    const startCreate = () => {
+        resetForm()
+        document.getElementById('modal-form').showModal()
+    }
+    const create = async () => {
+        await ingredientStore.createMutation.mutateAsync({
+            payload: {
+                name: localName,
+                category: localCategory,
+                priority: localPriority
+            }
+        })
+        resetForm()
+        document.getElementById('modal-form').close()
+    }
+    const startUpdate = (ingredient) => {
+        setUpdateId(ingredient.id)
+        setLocalName(ingredient.name)
+        setLocalCategory(ingredient.category?.id)
+        setLocalPriority(ingredient.priority)
+        document.getElementById('modal-form').showModal()
+    }
+    const update = async () => {
+        await ingredientStore.updateMutation.mutateAsync({
+            id: updateId,
+            payload: {
+                name: localName,
+                category: localCategory,
+                priority: localPriority
+            }
+        })
+        resetForm()
+        document.getElementById('modal-form').close()
+    }
+
+    const resetForm = () => {
+        setUpdateId(null)
+        setLocalName('')
+        setLocalCategory(null)
+        setLocalPriority(0)
+    }
 
     return <>
         {ingredientStore.listQuery.isLoading
@@ -12,6 +69,7 @@ export function IngredientListView() {
             <span className="loading loading-spinner loading-xl"></span>
             :
             <>
+
                 <div className="mt-4">
                     {ingredientStore.listQuery.data?.length === 0
                         ?
@@ -31,7 +89,14 @@ export function IngredientListView() {
                                     <tr key={ingredient.id}>
                                         <td>{ingredient.name}</td>
                                         <td>{ingredient.category?.name}</td>
-                                        <td></td>
+                                        <td className="flex justify-end gap-2">
+                                            <button
+                                                className="btn btn-sm btn-info"
+                                                onClick={() => startUpdate(ingredient)}
+                                            >
+                                                Edit
+                                            </button>
+                                        </td>
                                     </tr>
                                 ))}
                                 </tbody>
@@ -39,11 +104,78 @@ export function IngredientListView() {
                         </div>
                     }
                 </div>
+
                 <QuickActions>
-                    <QuickActionButton>
+                    <QuickActionButton onClick={startCreate}>
                         <UiIcon icon="add" size="2xl" />
                     </QuickActionButton>
                 </QuickActions>
+
+                <dialog id="modal-form" className="modal">
+                    <div className="modal-box">
+                        <div className="flex flex-col gap-4">
+                            <h3 className="text-lg font-bold">
+                                {isUpdate ? 'Update ingredient' : 'Create ingredient'}
+                            </h3>
+                            <p>
+                                Create an ingredient to use in your recipes. You can add a name, a category and a priority.
+                            </p>
+                            <div>
+                                <fieldset className="fieldset py-0">
+                                    <legend className="fieldset-legend">Name</legend>
+                                    <input
+                                        type="text"
+                                        className="input input-lg w-full mb-2"
+                                        value={localName.toString()}
+                                        onChange={(e) => setLocalName(e.target.value)}
+                                    />
+                                </fieldset>
+                                <fieldset className="fieldset">
+                                    <legend className="fieldset-legend">Category</legend>
+                                    <select
+                                        defaultValue=""
+                                        value={localCategory?.toString() || ''}
+                                        className="select w-full"
+                                        onChange={(e) => setLocalCategory(e.target.value)}
+                                    >
+                                        <option disabled={true} value="">Pick a category</option>
+                                        {ingredientCategoryStore.listQuery.data?.map(category => (
+                                            <option key={category.id} value={category.id}>{category.name}</option>
+                                        ))}
+                                    </select>
+                                </fieldset>
+                                <fieldset className="fieldset">
+                                    <legend className="fieldset-legend">Priority</legend>
+                                    <input
+                                        type="number"
+                                        className="input input-lg w-full mb-2"
+                                        value={localPriority}
+                                        onChange={(e) => setLocalPriority(parseInt(e.target.value) || 0)}
+                                    />
+                                </fieldset>
+                            </div>
+                        </div>
+                        <div className="modal-action">
+                            <button
+                                className="btn btn-success"
+                                disabled={localName.length === 0}
+                                onClick={isUpdate ? update : create}
+                            >
+                                {isUpdate
+                                    ? ingredientStore.updateMutation.isPending
+                                        ? <span className="loading loading-spinner loading-sm"></span>
+                                        : 'Update'
+                                    : ingredientStore.createMutation.isPending
+                                        ? <span className="loading loading-spinner loading-sm"></span>
+                                        : 'Create'}
+                            </button>
+                        </div>
+                    </div>
+                    <form method="dialog" className="modal-backdrop">
+                        <button>close</button>
+                    </form>
+                </dialog>
+
             </>
         }
     </>

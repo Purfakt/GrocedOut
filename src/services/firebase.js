@@ -1,6 +1,6 @@
 import { initializeApp } from 'firebase/app'
 import { getAuth, connectAuthEmulator } from 'firebase/auth'
-import { getFirestore, connectFirestoreEmulator, collection, doc, getDocs, addDoc, updateDoc, deleteDoc, query, orderBy } from 'firebase/firestore'
+import { getFirestore, connectFirestoreEmulator, collection, doc, getDocs, addDoc, updateDoc, deleteDoc, query, orderBy, where, writeBatch } from 'firebase/firestore'
 
 const firebaseConfig = {
     apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
@@ -43,12 +43,60 @@ export const getCollection = async (collectionName) => {
         'color: #FF79C6FF', collectionName
     )
     await delay()
-    const recipesRef = collection(db, collectionName)
-    const q = query(recipesRef, orderBy('createdAt', 'desc'))
+    const collectionRef = collection(db, collectionName)
+    const q = query(collectionRef, orderBy('createdAt', 'desc'))
     const querySnapshot = await getDocs(q)
     const collectionData = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }))
     console.log('%c%s', 'color: #51FA7BFF', 'Collection data:', collectionData)
     return collectionData
+}
+
+export const updateCollection = async (collectionName, data) => {
+    console.log('%c%s %c%s %c%s',
+        'color: #8BE9FDFF', 'Updating collection:',
+        'color: #FF79C6FF', collectionName,
+        'color: #8BE9FDFF', 'with data:', data
+    )
+    await delay()
+    const collectionRef = collection(db, collectionName)
+    const q = query(collectionRef, orderBy('createdAt'))
+    const querySnapshot = await getDocs(q)
+    const batch = writeBatch(db)
+    querySnapshot.forEach((doc) => {
+        batch.update(doc.ref, {
+            ...data,
+            updatedAt: new Date(),
+        })
+    })
+    await batch.commit()
+    console.log('%c%s %c%s',
+        'color: #51FA7BFF', 'Collection updated with data:',
+        'color: #FF79C6FF', data
+    )
+}
+
+export const updateCollectionWhere = async (collectionName, whereTuple, data) => {
+    console.log('%c%s %c%s %c%s',
+        'color: #8BE9FDFF', 'Updating collection:',
+        'color: #FF79C6FF', collectionName,
+        'color: #8BE9FDFF', 'with data:', data
+    )
+    await delay()
+    const collectionRef = collection(db, collectionName)
+    const q = query(collectionRef, orderBy('createdAt'), where(whereTuple[0], whereTuple[1], whereTuple[2]))
+    const querySnapshot = await getDocs(q)
+    const batch = writeBatch(db)
+    querySnapshot.forEach((doc) => {
+        batch.update(doc.ref, {
+            ...data,
+            updatedAt: new Date(),
+        })
+    })
+    await batch.commit()
+    console.log('%c%s %c%s',
+        'color: #51FA7BFF', 'Collection updated with data:',
+        'color: #FF79C6FF', data
+    )
 }
 
 export const createDocument = async (collectionName, data) => {
@@ -58,7 +106,11 @@ export const createDocument = async (collectionName, data) => {
         'color: #8BE9FDFF', 'with data:', data
     )
     await delay()
-    const docRef = await addDoc(collection(db, collectionName), { ...data, createdAt: new Date() })
+    const docRef = await addDoc(collection(db, collectionName), {
+        ...data,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+    })
     console.log('%c%s %c%s',
         'color: #51FA7BFF', 'Document created with ID:',
         'color: #FF79C6FF', docRef.id
@@ -76,7 +128,10 @@ export const updateDocument = async (collectionName, documentId, data) => {
     )
     await delay()
     const docRef = doc(db, collectionName, documentId)
-    await updateDoc(docRef, data)
+    await updateDoc(docRef, {
+        ...data,
+        updatedAt: new Date(),
+    })
     console.log('%c%s %c%s',
         'color: #51FA7BFF', 'Document updated with ID:',
         'color: #FF79C6FF', documentId,
