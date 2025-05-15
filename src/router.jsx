@@ -30,8 +30,8 @@ const layoutRoute = createRoute({
 })
 
 const layoutIngredientRoute = createRoute({
+    id: 'layoutIngredient',
     getParentRoute: () => layoutRoute,
-    path: '/ingredient',
     component: IngredientLayout,
 })
 
@@ -85,7 +85,7 @@ const routeTree = layoutRoute
             .addChildren([
                 createRoute({
                     getParentRoute: () => layoutIngredientRoute,
-                    path: '/ingredient',
+                    path: '/ingredient/ingredient',
                     component: IngredientListView,
                     context: () => ({
                         title: 'Ingredients',
@@ -93,7 +93,7 @@ const routeTree = layoutRoute
                 }),
                 createRoute({
                     getParentRoute: () => layoutIngredientRoute,
-                    path: '/category',
+                    path: '/ingredient/category',
                     component: IngredientCategoryListView,
                 }),
             ])
