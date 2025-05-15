@@ -1,6 +1,6 @@
 export const sanitizeUndefinedRecursive = (obj) => {
     if (obj === undefined) {
-        return null
+        return undefined
     }
     if (Array.isArray(obj)) {
         return obj.map(sanitizeUndefinedRecursive)
@@ -9,7 +9,10 @@ export const sanitizeUndefinedRecursive = (obj) => {
         const sanitizedObj = {}
         for (const key in obj) {
             if (obj.hasOwnProperty(key)) {
-                sanitizedObj[key] = sanitizeUndefinedRecursive(obj[key])
+                const value = sanitizeUndefinedRecursive(obj[key])
+                if (value !== undefined) {
+                    sanitizedObj[key] = value
+                }
             }
         }
         return sanitizedObj
