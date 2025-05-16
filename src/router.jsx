@@ -53,7 +53,7 @@ const routeTree = layoutRoute
                 const recipeStore = useRecipeStore()
                 const recipe = recipeStore.getById(id)
 
-                const context = useRouteContext({ from: 'layout' })
+                const context = useRouteContext({ from: '/layout' })
                 context.title = recipe?.name || 'Recipe'
 
                 return <RecipeShowView recipe={recipe} />
@@ -75,7 +75,7 @@ const routeTree = layoutRoute
                 const recipeStore = useRecipeStore()
                 const recipe = recipeStore.getById(id)
 
-                const context = useRouteContext({ from: 'layout' })
+                const context = useRouteContext({ from: '/layout' })
                 context.title = recipe?.name || 'Recipe'
 
                 return <RecipeFormView recipe={recipe} />
