@@ -143,7 +143,7 @@ export function IngredientListView() {
                             </p>
                             <div>
                                 <fieldset className="fieldset py-0">
-                                    <legend className="fieldset-legend">Name</legend>
+                                    <legend className="fieldset-legend pt-0">Name</legend>
                                     <input
                                         type="text"
                                         className="input input-lg w-full mb-2"
@@ -152,7 +152,7 @@ export function IngredientListView() {
                                     />
                                 </fieldset>
                                 <fieldset className="fieldset">
-                                    <legend className="fieldset-legend">Category</legend>
+                                    <legend className="fieldset-legend pt-0">Category</legend>
                                     <select
                                         value={localCategory?.toString() || ''}
                                         className="select w-full"
@@ -165,7 +165,7 @@ export function IngredientListView() {
                                     </select>
                                 </fieldset>
                                 <fieldset className="fieldset">
-                                    <legend className="fieldset-legend">Priority</legend>
+                                    <legend className="fieldset-legend pt-0">Priority</legend>
                                     <input
                                         type="number"
                                         className="input input-lg w-full mb-2"

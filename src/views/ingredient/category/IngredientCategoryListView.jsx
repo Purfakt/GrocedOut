@@ -130,7 +130,7 @@ export function IngredientCategoryListView() {
                             </p>
                             <div>
                                 <fieldset className="fieldset py-0">
-                                    <legend className="fieldset-legend">Name</legend>
+                                    <legend className="fieldset-legend pt-0">Name</legend>
                                     <input
                                         type="text"
                                         className="input input-lg w-full mb-2"
@@ -139,7 +139,7 @@ export function IngredientCategoryListView() {
                                     />
                                 </fieldset>
                                 <fieldset className="fieldset">
-                                    <legend className="fieldset-legend">Priority</legend>
+                                    <legend className="fieldset-legend pt-0">Priority</legend>
                                     <input
                                         type="number"
                                         className="input input-lg w-full mb-2"
