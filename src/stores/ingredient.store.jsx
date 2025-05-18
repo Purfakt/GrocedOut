@@ -2,7 +2,6 @@ import { getCollection, createDocument, updateDocument, deleteDocument } from '@
 import { createContext, useContext } from 'react'
 import { useMutation, useMutationState, useQuery } from '@tanstack/react-query'
 import { queryClient } from '@/services/tanstackQuery.jsx'
-import { ingredientCategoryMapper } from '@/stores/ingredientCategory.store.jsx'
 import { sanitizeUndefinedRecursive } from '@/utils/object.js'
 
 /*
@@ -17,7 +16,8 @@ export const ingredientMapper = (ingredient, partial = false) => {
     if (ingredient.category) {
         mappedIngredient.category = {
             id: ingredient.category.id,
-            ...ingredientCategoryMapper(ingredient.category, partial),
+            name: ingredient.category.name ?? (partial ? undefined : ''),
+            priority: ingredient.category.priority ?? (partial ? undefined : 0),
         }
     }
     return sanitizeUndefinedRecursive(mappedIngredient)

@@ -3,30 +3,52 @@ import { useRecipeStore } from '@/stores/recipe.store.jsx'
 import { useIngredientStore } from '@/stores/ingredient.store.jsx'
 import { useStateWithDeps } from '@/utils/useStateWithDeps.jsx'
 import { UiIcon } from '@lib/components/UiIcon.jsx'
-import { useState } from 'react'
+import { useRef, useState } from 'react'
+import { useDebouncedCallback } from 'use-debounce'
 
 export function RecipeFormView({ recipe }) {
     const navigate = useNavigate()
     const recipeStore = useRecipeStore()
     const ingredientStore = useIngredientStore()
 
+    /**
+     * Form mode
+     */
     const isUpdate = recipe !== undefined
 
+    /**
+     * Name and description
+     */
     const [localName, setLocalName] = useStateWithDeps(recipe?.name || '', [recipe])
     const [localDescription, setLocalDescription] = useStateWithDeps(recipe?.description || '', [recipe])
 
-    const [localIngredients, setLocalIngredients] = useState([])
+    /**
+     * Ingredients
+     */
+    const [localIngredients, setLocalIngredients] = useStateWithDeps(recipe?.ingredients || [], [recipe])
     const [localIngredientSearch, setLocalIngredientSearch] = useState('')
     const availableIngredients = ingredientStore.listQuery.data
         ?.filter(ingredient => ingredient.name.toLowerCase().includes(localIngredientSearch.toLowerCase()))
         ?.filter(ingredient => !localIngredients.some(i => i.id === ingredient.id))
 
-    const onBlur = () => {
+    /**
+     * Save
+     */
+    const shouldSave = useRef(false)
+    const saveDebounced = useDebouncedCallback(() => {
         if (recipeStore.createMutation.isPending) return
         if (isUpdate) {
-            recipeStore.updateMutation.mutate({ id: recipe.id, payload: { name: localName, description: localDescription } })
+            recipeStore.updateMutation.mutate({ id: recipe.id, payload: {
+                name: localName,
+                description: localDescription,
+                ingredients: localIngredients,
+            }})
         } else {
-            recipeStore.createMutation.mutateAsync({ payload: { name: localName, description: localDescription } })
+            recipeStore.createMutation.mutateAsync({ payload: {
+                name: localName,
+                description: localDescription,
+                ingredients: localIngredients,
+            }})
                 .then(async (createdRecipe) => {
                     // If we navigate immediately, the "update" route component function execution happens in the same render loop,
                     // the mutation is done and the listQuery is invalidated, but the new listQuery.data state is not yet available.
@@ -39,6 +61,32 @@ export function RecipeFormView({ recipe }) {
                     })
                 })
         }
+    }, 1000)
+    if (shouldSave.current) {
+        shouldSave.current = false
+        saveDebounced()
+    }
+
+    /**
+     * Page actions
+     */
+    const onSelectIngredient = (ingredient) => {
+        setLocalIngredients([...localIngredients, {
+            ...ingredient,
+            quantity: 1
+        }])
+        setLocalIngredientSearch('')
+        document.getElementById('search-dropdown').blur()
+        shouldSave.current = true
+    }
+
+    const onSetQuantity = (ingredient, quantity) => {
+        if (quantity < 0 || ingredient.quantity === quantity) return
+        setLocalIngredients(localIngredients.map(i => i.id === ingredient.id ? {
+            ...i,
+            quantity
+        } : i).filter(i => i.quantity > 0))
+        shouldSave.current = true
     }
 
     return <>
@@ -69,7 +117,7 @@ export function RecipeFormView({ recipe }) {
                                 className="input input-lg w-full mb-2"
                                 value={localName.toString()}
                                 onChange={(e) => setLocalName(e.target.value)}
-                                onBlur={onBlur}
+                                onBlur={saveDebounced}
                             />
                         </fieldset>
                         <fieldset className="fieldset py-0">
@@ -78,7 +126,7 @@ export function RecipeFormView({ recipe }) {
                                 className="textarea textarea-lg w-full resize-none"
                                 value={localDescription.toString()}
                                 onChange={(e) => setLocalDescription(e.target.value)}
-                                onBlur={onBlur}
+                                onBlur={saveDebounced}
                             ></textarea>
                         </fieldset>
 
@@ -91,7 +139,7 @@ export function RecipeFormView({ recipe }) {
                                 <UiIcon icon="search" className="mr-2" size="xl" />
                                 <input type="search" placeholder="Search and add ingredients" value={localIngredientSearch} onChange={(e) => setLocalIngredientSearch(e.target.value)} />
                             </label>
-                            <ul tabIndex={0} className="dropdown-content menu bg-base-100 rounded-box z-1 w-full p-2 shadow-xl">
+                            <ul tabIndex={0} id="search-dropdown" className="dropdown-content menu bg-base-100 rounded-box z-1 w-full p-2 shadow-xl" onBlur={saveDebounced}>
                                 {ingredientStore.listQuery.isLoading
                                     ?
                                     <li className="loading loading-spinner loading-lg"></li>
@@ -102,13 +150,7 @@ export function RecipeFormView({ recipe }) {
                                         :
                                         availableIngredients.map(ingredient => (
                                             <li key={ingredient.id}>
-                                                <a onClick={() => {
-                                                    setLocalIngredients([...localIngredients, {
-                                                        ...ingredient,
-                                                        quantity: 1
-                                                    }])
-                                                    setLocalIngredientSearch('')
-                                                }}>
+                                                <a onClick={() => onSelectIngredient(ingredient)}>
                                                     {ingredient.name}
                                                 </a>
                                             </li>
@@ -124,46 +166,23 @@ export function RecipeFormView({ recipe }) {
                             :
                             <div className="grid grid-cols-2 gap-2">
                                 {localIngredients.map(ingredient => (
-                                    <div className="card card-sm bg-base-100 shadow-sm">
+                                    <div className="card card-sm bg-base-100 card-border border-base-300" key={ingredient.id}>
                                         <div className="card-body">
                                             <div className="flex items-center">
                                                 <div className="flex-1">
                                                     <span className="text-sm">{ingredient.name}</span>
                                                 </div>
                                                 <div className="flex items-center gap-2">
-                                                    <button className="btn btn-sm btn-circle btn-error text-2xl" onClick={() => {
-                                                        setLocalIngredients(
-                                                            localIngredients
-                                                                .map(i => i.id === ingredient.id ? {
-                                                                    ...i,
-                                                                    quantity: i.quantity - 1
-                                                                } : i)
-                                                                .filter(i => i.quantity > 0)
-                                                        )
-                                                    }}>
+                                                    <button className="btn btn-sm btn-circle btn-error text-2xl" onClick={() => onSetQuantity(ingredient, ingredient.quantity - 1)}>
                                                         <UiIcon icon={ingredient.quantity > 1 ? 'remove' : 'delete'} />
                                                     </button>
                                                     <input
                                                         type="number"
                                                         className="input w-18 text-center font-bold"
                                                         value={ingredient.quantity.toString()}
-                                                        onChange={(e) => {
-                                                            setLocalIngredients(
-                                                                localIngredients
-                                                                    .map(i => i.id === ingredient.id ? {
-                                                                        ...i,
-                                                                        quantity: parseInt(e.target.value) || 1
-                                                                    } : i)
-                                                                    .filter(i => i.quantity > 0)
-                                                            )
-                                                        }}
+                                                        onChange={(e) => onSetQuantity(ingredient, parseInt(e.target.value) || 0)}
                                                     />
-                                                    <button className="btn btn-sm btn-circle btn-success text-2xl" onClick={() => {
-                                                        setLocalIngredients(localIngredients.map(i => i.id === ingredient.id ? {
-                                                            ...i,
-                                                            quantity: i.quantity + 1
-                                                        } : i))
-                                                    }}>
+                                                    <button className="btn btn-sm btn-circle btn-success text-2xl" onClick={() => onSetQuantity(ingredient, ingredient.quantity + 1)}>
                                                         <UiIcon icon="add" />
                                                     </button>
                                                 </div>

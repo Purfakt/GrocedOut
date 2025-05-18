@@ -7,11 +7,22 @@ import { sanitizeUndefinedRecursive } from '@/utils/object.js'
 /*
  * Mapping
  */
-const recipeMapper = (recipe, partial = false) => sanitizeUndefinedRecursive({
-    name: recipe.name ?? (partial ? undefined : ''),
-    description: recipe.description ?? (partial ? undefined : ''),
-    quantity: recipe.quantity ?? (partial ? undefined : 0),
-})
+const recipeMapper = (recipe, partial = false) => {
+    const mappedRecipe = {
+        name: recipe.name ?? (partial ? undefined : ''),
+        description: recipe.description ?? (partial ? undefined : ''),
+        quantity: recipe.quantity ?? (partial ? undefined : 0),
+        ingredients: recipe.ingredients ?? (partial ? undefined : []),
+    }
+    if (recipe.ingredients) {
+        mappedRecipe.ingredients = recipe.ingredients.map(ingredient => ({
+            id: ingredient.id,
+            name: ingredient.name ?? (partial ? undefined : ''),
+            quantity: ingredient.quantity ?? (partial ? undefined : 0),
+        }))
+    }
+    return sanitizeUndefinedRecursive(mappedRecipe)
+}
 
 /*
  * Store
