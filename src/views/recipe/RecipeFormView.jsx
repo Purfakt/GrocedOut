@@ -1,6 +1,6 @@
 import { useNavigate } from '@tanstack/react-router'
 import { useRecipeStore } from '@/stores/recipe.store.jsx'
-import { useIngredientStore } from '@/stores/ingredient.store.jsx'
+import { useGroceryItemStore } from '@/stores/groceryItem.store.jsx'
 import { useStateWithDeps } from '@/utils/useStateWithDeps.jsx'
 import { UiIcon } from '@lib/components/UiIcon.jsx'
 import { useRef, useState } from 'react'
@@ -9,7 +9,7 @@ import { useDebouncedCallback } from 'use-debounce'
 export function RecipeFormView({ recipe }) {
     const navigate = useNavigate()
     const recipeStore = useRecipeStore()
-    const ingredientStore = useIngredientStore()
+    const groceryItemStore = useGroceryItemStore()
 
     /**
      * Form mode
@@ -27,9 +27,10 @@ export function RecipeFormView({ recipe }) {
      */
     const [localIngredients, setLocalIngredients] = useStateWithDeps(recipe?.ingredients || [], [recipe])
     const [localIngredientSearch, setLocalIngredientSearch] = useState('')
-    const availableIngredients = ingredientStore.listQuery.data
-        ?.filter(ingredient => ingredient.name.toLowerCase().includes(localIngredientSearch.toLowerCase()))
-        ?.filter(ingredient => !localIngredients.some(i => i.id === ingredient.id))
+    const availableIngredients = groceryItemStore.listQuery.data
+        ?.filter(item => item.isIngredient)
+        ?.filter(item => item.name.toLowerCase().includes(localIngredientSearch.toLowerCase()))
+        ?.filter(item => !localIngredients.some(i => i.id === item.id))
 
     /**
      * Save
@@ -139,8 +140,8 @@ export function RecipeFormView({ recipe }) {
                                 <UiIcon icon="search" className="mr-2" size="xl" />
                                 <input type="search" placeholder="Search and add ingredients" value={localIngredientSearch} onChange={(e) => setLocalIngredientSearch(e.target.value)} />
                             </label>
-                            <ul tabIndex={0} id="search-dropdown" className="dropdown-content menu bg-base-100 rounded-box z-1 w-full p-2 shadow-xl" onBlur={saveDebounced}>
-                                {ingredientStore.listQuery.isLoading
+                            <ul tabIndex={0} id="search-dropdown" className="dropdown-content menu bg-base-100 rounded-box z-1 w-full p-2 shadow-xl">
+                                {groceryItemStore.listQuery.isLoading
                                     ?
                                     <li className="loading loading-spinner loading-lg"></li>
                                     :

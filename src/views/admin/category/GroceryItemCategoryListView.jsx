@@ -1,19 +1,16 @@
 import { UiIcon } from '@lib/components/UiIcon.jsx'
 import { QuickActions } from '@/components/QuickActions.jsx'
 import { QuickActionButton } from '@/components/QuickActionButton.jsx'
-import { useIngredientStore } from '@/stores/ingredient.store.jsx'
 import { useState } from 'react'
-import { useIngredientCategoryStore } from '@/stores/ingredientCategory.store.jsx'
+import { useItemCategoryStore } from '@/stores/itemCategory.store.jsx'
 
-export function IngredientListView() {
-    const ingredientStore = useIngredientStore()
-    const ingredientCategoryStore = useIngredientCategoryStore()
+export function GroceryItemCategoryListView() {
+    const itemCategoryStore = useItemCategoryStore()
 
     /*
      * Form
      */
     const [localName, setLocalName] = useState('')
-    const [localCategory, setLocalCategory] = useState(null)
     const [localPriority, setLocalPriority] = useState(0)
 
     /*
@@ -26,41 +23,38 @@ export function IngredientListView() {
         document.getElementById('modal-form').showModal()
     }
     const create = async () => {
-        await ingredientStore.createMutation.mutateAsync({
+        await itemCategoryStore.createMutation.mutateAsync({
             payload: {
                 name: localName,
-                category: ingredientCategoryStore.getById(localCategory) || null,
                 priority: localPriority
             }
         })
         resetForm()
         document.getElementById('modal-form').close()
     }
-    const startUpdate = (ingredient) => {
-        setCurrentId(ingredient.id)
-        setLocalName(ingredient.name || '')
-        setLocalCategory(ingredient.category?.id || null)
-        setLocalPriority(ingredient.priority || 0)
+    const startUpdate = (category) => {
+        setCurrentId(category.id)
+        setLocalName(category.name || '')
+        setLocalPriority(category.priority || 0)
         document.getElementById('modal-form').showModal()
     }
     const update = async () => {
-        await ingredientStore.updateMutation.mutateAsync({
+        await itemCategoryStore.updateMutation.mutateAsync({
             id: currentId,
             payload: {
                 name: localName,
-                category: ingredientCategoryStore.getById(localCategory) || null,
                 priority: localPriority
             }
         })
         resetForm()
         document.getElementById('modal-form').close()
     }
-    const startDelete = (ingredient) => {
-        setCurrentId(ingredient.id)
+    const startDelete = (category) => {
+        setCurrentId(category.id)
         document.getElementById('modal-delete').showModal()
     }
-    const deleteIngredient = async () => {
-        await ingredientStore.deleteMutation.mutateAsync({ id: currentId })
+    const deleteCategory = async () => {
+        await itemCategoryStore.deleteMutation.mutateAsync({ id: currentId })
         setCurrentId(null)
         document.getElementById('modal-delete').close()
     }
@@ -68,58 +62,51 @@ export function IngredientListView() {
     const resetForm = () => {
         setCurrentId(null)
         setLocalName('')
-        setLocalCategory(null)
         setLocalPriority(0)
     }
 
     return <>
-        {ingredientStore.listQuery.isLoading
+        {itemCategoryStore.listQuery.isLoading
             ?
             <span className="loading loading-spinner loading-xl"></span>
             :
             <>
 
                 <div className="mt-4">
-                    {ingredientStore.listQuery.data?.length === 0
+                    {itemCategoryStore.listQuery.data?.length === 0
                         ?
-                        <p>No ingredients found. Add your first ingredient!</p>
+                        <p>No category found. Add your first grocery item!</p>
                         :
                         <div className="overflow-x-auto rounded-box border border-base-content/5 bg-base-100">
                             <table className="table">
                                 <thead className="bg-base-300">
-                                <tr>
-                                    <th>Name</th>
-                                    <th>Category</th>
-                                    <th>Priority</th>
-                                    <th></th>
-                                </tr>
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Priority</th>
+                                        <th></th>
+                                    </tr>
                                 </thead>
                                 <tbody>
-                                {ingredientStore.listQuery.data?.map(ingredient => (
-                                    <tr key={ingredient.id}>
-                                        <td>{ingredient.name}</td>
-                                        <td>
-                                            {ingredient.category && <span className="badge bg-base-200 border-base-300">{ingredient.category.name}</span>}
-                                        </td>
-                                        <td>
-                                            {ingredient.priority}
-                                        </td>
-                                        <td className="flex justify-end gap-1">
-                                            <button
-                                                className="btn btn-ghost btn-sm px-2"
-                                                onClick={() => startUpdate(ingredient)}
-                                            >
-                                                <UiIcon icon="edit" size="lg" />
-                                            </button>
-                                            <button
-                                                className="btn btn-ghost btn-sm px-2"
-                                                onClick={() => startDelete(ingredient)}
-                                            >
-                                                <UiIcon icon="delete" size="lg" />
-                                            </button>
-                                        </td>
-                                    </tr>
-                                ))}
+                                    {itemCategoryStore.listQuery.data?.map(category => (
+                                        <tr key={category.id}>
+                                            <td>{category.name}</td>
+                                            <td>{category.priority}</td>
+                                            <td className="flex justify-end gap-1">
+                                                <button
+                                                    className="btn btn-ghost btn-sm px-2"
+                                                    onClick={() => startUpdate(category)}
+                                                >
+                                                    <UiIcon icon="edit" size="lg" />
+                                                </button>
+                                                <button
+                                                    className="btn btn-ghost btn-sm px-2"
+                                                    onClick={() => startDelete(category)}
+                                                >
+                                                    <UiIcon icon="delete" size="lg" />
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    ))}
                                 </tbody>
                             </table>
                         </div>
@@ -136,10 +123,10 @@ export function IngredientListView() {
                     <div className="modal-box">
                         <div className="flex flex-col gap-4">
                             <h3 className="text-lg font-bold">
-                                {isUpdate ? 'Update ingredient' : 'Create ingredient'}
+                                {isUpdate ? 'Update grocery item' : 'Create grocery item'}
                             </h3>
                             <p>
-                                Create an ingredient to use in your recipes. You can add a name, a category and a priority.
+                                Create a category to use in your grocery items. You can add a name and a priority.
                             </p>
                             <div>
                                 <fieldset className="fieldset py-0">
@@ -150,19 +137,6 @@ export function IngredientListView() {
                                         value={localName.toString()}
                                         onChange={(e) => setLocalName(e.target.value)}
                                     />
-                                </fieldset>
-                                <fieldset className="fieldset">
-                                    <legend className="fieldset-legend pt-0">Category</legend>
-                                    <select
-                                        value={localCategory?.toString() || ''}
-                                        className="select w-full"
-                                        onChange={(e) => setLocalCategory(e.target.value)}
-                                    >
-                                        <option value="">No category</option>
-                                        {ingredientCategoryStore.listQuery.data?.map(category => (
-                                            <option key={category.id} value={category.id}>{category.name}</option>
-                                        ))}
-                                    </select>
                                 </fieldset>
                                 <fieldset className="fieldset">
                                     <legend className="fieldset-legend pt-0">Priority</legend>
@@ -182,11 +156,13 @@ export function IngredientListView() {
                                 onClick={isUpdate ? update : create}
                             >
                                 {isUpdate
-                                    ? ingredientStore.updateMutation.isPending
-                                        ? <span className="loading loading-spinner loading-sm"></span>
+                                    ? itemCategoryStore.updateMutation.isPending
+                                        ?
+                                        <span className="loading loading-spinner loading-sm"></span>
                                         : 'Update'
-                                    : ingredientStore.createMutation.isPending
-                                        ? <span className="loading loading-spinner loading-sm"></span>
+                                    : itemCategoryStore.createMutation.isPending
+                                        ?
+                                        <span className="loading loading-spinner loading-sm"></span>
                                         : 'Create'}
                             </button>
                         </div>
@@ -198,15 +174,16 @@ export function IngredientListView() {
 
                 <dialog id="modal-delete" className="modal">
                     <div className="modal-box">
-                        <h3 className="text-lg font-bold">Delete ingredient</h3>
-                        <p>Are you sure you want to delete this ingredient?</p>
+                        <h3 className="text-lg font-bold">Delete category</h3>
+                        <p>Are you sure you want to delete this category?</p>
                         <div className="modal-action">
                             <button
                                 className="btn btn-error"
-                                onClick={deleteIngredient}
+                                onClick={deleteCategory}
                             >
-                                {ingredientStore.deleteMutation.isPending
-                                    ? <span className="loading loading-spinner loading-sm"></span>
+                                {itemCategoryStore.deleteMutation.isPending
+                                    ?
+                                    <span className="loading loading-spinner loading-sm"></span>
                                     : 'Delete'}
                             </button>
                         </div>

@@ -4,9 +4,10 @@ import { Layout } from '@/views/Layout'
 import { RecipeListView } from '@/views/recipe/RecipeListView.jsx'
 import { RecipeShowView } from '@/views/recipe/RecipeShowView.jsx'
 import { RecipeFormView } from '@/views/recipe/RecipeFormView.jsx'
-import { IngredientLayout } from '@/views/ingredient/Layout.jsx'
-import { IngredientListView } from '@/views/ingredient/ingredient/IngredientListView.jsx'
-import { IngredientCategoryListView } from '@/views/ingredient/category/IngredientCategoryListView.jsx'
+import { GroceryItemsLayout  } from '@/views/admin/GroceryItemsLayout.jsx'
+import { GroceryItemListView } from '@/views/admin/groceryItem/GroceryItemListView.jsx'
+import { GroceryItemCategoryListView } from '@/views/admin/category/GroceryItemCategoryListView.jsx'
+import { GroceryListView } from '@/views/grocery/GroceryListView.jsx'
 import { getTanstackQueryContext } from '@/services/tanstackQuery.jsx'
 import { useRecipeStore } from '@/stores/recipe.store.jsx'
 
@@ -29,10 +30,10 @@ const layoutRoute = createRoute({
     }
 })
 
-const layoutIngredientRoute = createRoute({
-    id: 'layoutIngredient',
+const layoutAdminTabsRoute = createRoute({
+    id: 'layoutAdminTabs',
     getParentRoute: () => layoutRoute,
-    component: IngredientLayout,
+    component: GroceryItemsLayout,
 })
 
 const routeTree = layoutRoute
@@ -81,20 +82,29 @@ const routeTree = layoutRoute
                 return <RecipeFormView recipe={recipe} />
             },
         }),
-        layoutIngredientRoute
+        createRoute({
+            getParentRoute: () => layoutRoute,
+            path: '/grocery',
+            component: GroceryListView,
+            context: () => ({
+                title: 'Grocery List',
+            }),
+        }),
+        layoutAdminTabsRoute
             .addChildren([
                 createRoute({
-                    getParentRoute: () => layoutIngredientRoute,
-                    path: '/ingredient/ingredient',
-                    component: IngredientListView,
+                    getParentRoute: () => layoutAdminTabsRoute,
+                    path: '/admin/groceryitems',
+                    component: GroceryItemListView,
                     context: () => ({
-                        title: 'Ingredients',
+                        title: 'Manage Grocery Items',
                     }),
                 }),
                 createRoute({
-                    getParentRoute: () => layoutIngredientRoute,
-                    path: '/ingredient/category',
-                    component: IngredientCategoryListView,
+                    getParentRoute: () => layoutAdminTabsRoute,
+                    path: '/admin/category',
+                    component: GroceryItemCategoryListView,
+                    context: () => ({ title: 'Manage Categories' }),
                 }),
             ])
     ])
